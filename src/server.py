@@ -7,15 +7,12 @@ server.listen()
 
 client, addr = server.accept()
 
-done = False
-
-while not done:
+while True:
     message = client.recv(1024).decode('utf-8')
     if message == 'quit':
-        done = True
+        break
     else:
         print(message)
-    client.send(input("Message: ").encode('utf-8'))
     
 server.close()
 client.close()
