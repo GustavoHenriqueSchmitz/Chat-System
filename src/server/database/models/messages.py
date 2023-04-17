@@ -1,11 +1,11 @@
 class messages:
     def __init__(self, connection):
-        self.database = connection.cursor
+        self.database = connection.cursor()
         self.create_table()
         
     def create_table(self):
         self.database.execute("""
-            create table messages (
+            create table if not exists messages (
                 id integer primary key auto_increment,
                 content varchar(1000) not null,
                 id_sender int not null,

@@ -8,9 +8,10 @@ connection = connect (
     host="localhost",
     user="root",
     password="root",
+    database="Chat-System"
 )
 
-users(connection)
-messages(connection)
-users_chats(connection)
-chats(connection)
+users = users(connection)
+chats = chats(connection)
+messages = messages(connection)
+users_chats = users_chats(connection)
