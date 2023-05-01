@@ -4,7 +4,7 @@ from models.messages import messages
 from models.users_chats import users_chats
 from models.users import users
 
-connection = connect (
+connection = connect(
     host="localhost",
     user="root",
     password="root",
