@@ -1,8 +1,8 @@
 class Chat():
     @staticmethod
-    def login():
+    def login(data):
         pass
     
     @staticmethod
-    def sign_up():
+    def sign_up(user_data):
         pass

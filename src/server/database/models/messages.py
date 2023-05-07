@@ -1,4 +1,4 @@
-class messages:
+class Messages:
     def __init__(self, connection):
         self.database = connection.cursor()
         self.create_table()

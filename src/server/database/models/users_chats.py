@@ -1,4 +1,4 @@
-class users_chats:
+class UsersChats:
     def __init__(self, connection):
         self.database = connection.cursor()
         self.create_table()
