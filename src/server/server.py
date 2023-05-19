@@ -2,12 +2,12 @@ import socket
 import threading
 import json
 
-from chat.chat import Chat
 from database.database import init_database
+from chat.chat import Chat
 
-init_database()
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("localhost", 9999))
+database = init_database()
 server.listen()
 
 
@@ -15,12 +15,11 @@ def handle_client(client_socket):
     while True:
         json_data = client_socket.recv(1024).decode('utf-8')
         message = json.loads(json_data)
-        print(message)
 
         if message['type'] == 'login':
-            Chat.login(message)
+            Chat.login(database, message['data'])
         elif message['type'] == 'sign_up':
-            Chat.sign_up(message.data)
+            Chat.sign_up(database, message['data'])
         elif message['type'] == 'close_connection':
             client_socket.close()
             break
