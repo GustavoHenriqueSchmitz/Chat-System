@@ -6,6 +6,7 @@ from .models.messages import Messages
 from .models.users_chats import UsersChats
 from .models.users import Users
 
+
 def check_connection_status(connection):
     while True:
         if not connection.is_connected():
@@ -18,21 +19,20 @@ def check_connection_status(connection):
                 print("Reconnected!")
         time.sleep(5)
 
-def init_database():
 
+def init_database():
     connection = connect(
-        host="localhost",
-        user="root",
-        password="root",
-        database="Chat-System"
+        host="localhost", user="root", password="root", database="Chat-System"
     )
-    connection_status_thread = threading.Thread(target=check_connection_status, args=(connection,))
+    connection_status_thread = threading.Thread(
+        target=check_connection_status, args=(connection,)
+    )
     connection_status_thread.start()
 
     database = {
         "users": Users(connection),
         "chats": Chats(connection),
         "messages": Messages(connection),
-        "user_chats": UsersChats(connection)
+        "user_chats": UsersChats(connection),
     }
     return database

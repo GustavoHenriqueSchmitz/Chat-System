@@ -8,11 +8,17 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("localhost", 9999))
 
 while True:
-    menu_option = selectMenu([
-        "Login",
-        "Sign Up",
-        "Leave Program",
-    ], "Seja bem Vindo ao Chat", "=>", 0)
+    os.system("cls" if os.name == "nt" else "clear")
+    menu_option = selectMenu(
+        [
+            "Login",
+            "Sign Up",
+            "Leave Program",
+        ],
+        "Seja bem Vindo ao Chat",
+        "=>",
+        0,
+    )
 
     if menu_option[1] == 0:
         Auth.login(client)
@@ -21,11 +27,15 @@ while True:
         Auth.sign_up(client)
 
     elif menu_option[1] == 2:
-        client.send(json.dumps({
-            "type": "close_connection",
-            "data": None,
-        }).encode('utf-8'))
-        os.system('cls' if os.name == 'nt' else 'clear')
+        client.send(
+            json.dumps(
+                {
+                    "type": "close_connection",
+                    "data": None,
+                }
+            ).encode("utf-8")
+        )
+        os.system("cls" if os.name == "nt" else "clear")
         break
 
 client.close()

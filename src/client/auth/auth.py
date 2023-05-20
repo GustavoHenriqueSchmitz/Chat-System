@@ -1,6 +1,8 @@
 import os
+import time
 from phonenumbers import parse, NumberParseException
 import json
+
 
 class Auth:
     @staticmethod
@@ -16,17 +18,21 @@ class Auth:
                     except NumberParseException:
                         print("Invalid Phone Number")
                 password = str(input("Password: "))
-                client.send(json.dumps({
-                    "type": "login",
-                    "data": {
-                        "phone_number": phone_number,
-                        "password": password,
-                    }
-                }).encode('utf-8'))
+                client.send(
+                    json.dumps(
+                        {
+                            "type": "login",
+                            "data": {
+                                "phone_number": phone_number,
+                                "password": password,
+                            },
+                        }
+                    ).encode("utf-8")
+                )
                 break
             except KeyboardInterrupt:
                 break
-        os.system('cls' if os.name == 'nt' else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
 
     @staticmethod
     def sign_up(client):
@@ -42,15 +48,22 @@ class Auth:
                     except NumberParseException:
                         print("Invalid Phone Number")
                 password = str(input("Password: "))
-                client.send(json.dumps({
-                    "type": "sign_up",
-                    "data": {
-                        "name": name,
-                        "phone_number": phone_number,
-                        "password": password,
-                    }
-                }).encode('utf-8'))
+                client.send(
+                    json.dumps(
+                        {
+                            "type": "sign_up",
+                            "data": {
+                                "name": name,
+                                "phone_number": phone_number,
+                                "password": password,
+                            },
+                        }
+                    ).encode("utf-8")
+                )
+                print("------------------------------------------------")
+                print(json.loads(client.recv(1024).decode("utf-8")))
+                time.sleep(3)
                 break
             except KeyboardInterrupt:
                 break
-        os.system('cls' if os.name == 'nt' else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
