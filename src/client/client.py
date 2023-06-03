@@ -21,7 +21,70 @@ while True:
     )
 
     if menu_option[1] == 0:
-        Auth.login(client)
+        login_results = Auth.login(client)
+
+        if login_results["error"] == False:
+            while True:
+                menu_option = selectMenu(
+                    [
+                        "Chats",
+                        "Groups",
+                        "Create Chat",
+                        "Create Group",
+                        "Settings",
+                        "Exit Chat",
+                    ],
+                    "Chat Options",
+                    "=>",
+                    0,
+                )
+
+                if menu_option[1] == 0:
+                    pass
+
+                elif menu_option[1] == 1:
+                    pass
+
+                elif menu_option[1] == 2:
+                    pass
+
+                elif menu_option[1] == 3:
+                    pass
+
+                elif menu_option[1] == 4:
+                    while True:
+                        menu_option = selectMenu(
+                            [
+                                "Change Name",
+                                "Delete User",
+                                "Return",
+                            ],
+                            "Chat Settings",
+                            "=>",
+                            0,
+                        )
+
+                        if menu_option[1] == 0:
+                            pass
+
+                        elif menu_option[1] == 1:
+                            pass
+
+                        elif menu_option[1] == 2:
+                            break
+
+                elif menu_option[1] == 5:
+                    client.send(
+                        json.dumps(
+                            {
+                                "request_type": "close_connection",
+                                "data": None,
+                            }
+                        ).encode("utf-8")
+                    )
+                    os.system("cls" if os.name == "nt" else "clear")
+                    client.close()
+                    exit()
 
     elif menu_option[1] == 1:
         Auth.sign_up(client)
@@ -30,12 +93,11 @@ while True:
         client.send(
             json.dumps(
                 {
-                    "type": "close_connection",
+                    "request_type": "close_connection",
                     "data": None,
                 }
             ).encode("utf-8")
         )
         os.system("cls" if os.name == "nt" else "clear")
-        break
-
-client.close()
+        client.close()
+        exit()

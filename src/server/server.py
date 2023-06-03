@@ -16,37 +16,78 @@ def handle_client(client_socket):
         json_data = client_socket.recv(1024).decode("utf-8")
         message = json.loads(json_data)
 
-        if message["type"] == "login":
+        if message["request_type"] == "login":
             try:
                 user = database["users"].find_user(message["data"]["phone_number"])
             except:
-                client_socket.send(json.dumps("User not found.").encode("utf-8"))
-            else:
-                if message["data"]["password"] == user[2]:
-                    client_socket.send(
-                        json.dumps("Login Successfully!").encode("utf-8")
-                    )
-                else:
-                    client_socket.send(json.dumps("Invalid Password.").encode("utf-8"))
-
-        elif message["type"] == "sign_up":
-            try:
-                database["users"].create_user(
-                    message["data"]["name"],
-                    message["data"]["phone_number"],
-                    message["data"]["password"],
-                )
-            except:
                 client_socket.send(
                     json.dumps(
-                        "Error while trying to register, try again or later."
+                        {"message": "User not found.", "data": None, "error": True}
                     ).encode("utf-8")
                 )
             else:
+                if message["data"]["password"] == user["password"]:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "Login Successfully!",
+                                "data": user,
+                                "error": False,
+                            }
+                        ).encode("utf-8")
+                    )
+                else:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "Invalid Password.",
+                                "data": None,
+                                "error": True,
+                            }
+                        ).encode("utf-8")
+                    )
+
+        elif message["request_type"] == "sign_up":
+            try:
+                database["users"].find_user(message["data"]["phone_number"])
+            except:
+                try:
+                    database["users"].create_user(
+                        message["data"]["name"],
+                        message["data"]["phone_number"],
+                        message["data"]["password"],
+                    )
+                except:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "Error while trying to register, try again or later.",
+                                "data": None,
+                                "error": True,
+                            }
+                        ).encode("utf-8")
+                    )
+                else:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "Registered successfully!",
+                                "data": None,
+                                "error": False,
+                            }
+                        ).encode("utf-8")
+                    )
+            else:
                 client_socket.send(
-                    json.dumps("Registered successfully!").encode("utf-8")
+                    json.dumps(
+                        {
+                            "message": "This user already exists, try again or go to login.",
+                            "data": None,
+                            "error": False,
+                        }
+                    ).encode("utf-8")
                 )
-        elif message["type"] == "close_connection":
+        elif message["request_type"] == "close_connection":
             client_socket.close()
             break
 

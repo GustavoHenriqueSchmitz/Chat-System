@@ -21,7 +21,7 @@ class Auth:
                 client.send(
                     json.dumps(
                         {
-                            "type": "login",
+                            "request_type": "login",
                             "data": {
                                 "phone_number": phone_number,
                                 "password": password,
@@ -29,10 +29,15 @@ class Auth:
                         }
                     ).encode("utf-8")
                 )
+                results = json.loads(client.recv(1024).decode("utf-8"))
+                print("------------------------------------------------")
+                print(results["message"])
+                time.sleep(3)
                 break
             except KeyboardInterrupt:
                 break
         os.system("cls" if os.name == "nt" else "clear")
+        return results
 
     @staticmethod
     def sign_up(client):
@@ -51,7 +56,7 @@ class Auth:
                 client.send(
                     json.dumps(
                         {
-                            "type": "sign_up",
+                            "request_type": "sign_up",
                             "data": {
                                 "name": name,
                                 "phone_number": phone_number,
@@ -60,10 +65,12 @@ class Auth:
                         }
                     ).encode("utf-8")
                 )
+                results = json.loads(client.recv(1024).decode("utf-8"))
                 print("------------------------------------------------")
-                print(json.loads(client.recv(1024).decode("utf-8")))
+                print(results["message"])
                 time.sleep(3)
                 break
             except KeyboardInterrupt:
                 break
         os.system("cls" if os.name == "nt" else "clear")
+        return results["error"]

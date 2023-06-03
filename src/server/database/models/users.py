@@ -20,7 +20,7 @@ class Users:
     def create_user(self, name, phone_number, password):
         self.database.execute(
             """
-            insert into users (name, number, password)
+            insert into users (name, phone_number, password)
             values (%s, %s, %s)
         """,
             (name, phone_number, password),
@@ -39,6 +39,6 @@ class Users:
         self.connection.commit()
 
         if user == None:
-            raise
+            raise Exception("User not found.")
         else:
-            return user
+            return {"name": user[0], "phone_number": user[1], "password": user[2]}
