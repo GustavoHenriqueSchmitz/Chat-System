@@ -42,3 +42,12 @@ class Users:
             raise Exception("User not found.")
         else:
             return {"name": user[0], "phone_number": user[1], "password": user[2]}
+
+    def delete_user(self, phone_number):
+        self.database.execute(
+            """
+            delete from users where phone_number = %s
+            """,
+            (phone_number,),
+        )
+        self.connection.commit()

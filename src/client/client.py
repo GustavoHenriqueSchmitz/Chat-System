@@ -1,4 +1,5 @@
 import socket
+import time
 from pick import pick as selectMenu
 from auth.auth import Auth
 import os
@@ -8,6 +9,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("localhost", 9999))
 
 while True:
+    loops_breaker = 0
     os.system("cls" if os.name == "nt" else "clear")
     menu_option = selectMenu(
         [
@@ -22,9 +24,14 @@ while True:
 
     if menu_option[1] == 0:
         login_results = Auth.login(client)
+        user_information = login_results["data"]
 
         if login_results["error"] == False:
             while True:
+
+                if loops_breaker > 0:
+                    break
+
                 menu_option = selectMenu(
                     [
                         "Chats",
@@ -53,6 +60,10 @@ while True:
 
                 elif menu_option[1] == 4:
                     while True:
+
+                        if loops_breaker > 0:
+                            break
+
                         menu_option = selectMenu(
                             [
                                 "Change Name",
@@ -68,7 +79,32 @@ while True:
                             pass
 
                         elif menu_option[1] == 1:
-                            pass
+                            while True:
+                                confirm_deletion = str(input("Do you really want to delete your user? [Y/N]: ")).strip().lower()
+                                if confirm_deletion != "y" and confirm_deletion != "n":
+                                    print("Invalid option, digit [Y/N]")
+                                    time.sleep(2)
+                                    continue
+                                else:
+                                    break
+                            
+                            if confirm_deletion == "y":
+                                client.send(
+                                    json.dumps(
+                                        {
+                                            "request_type": "delete_user",
+                                            "data": user_information["phone_number"]
+                                        }
+                                    ).encode("utf-8")
+                                )
+                                results = json.loads(client.recv(1024).decode("utf-8"))
+                                print("------------------------------------------------")
+                                print(results["message"])
+                                time.sleep(3)
+                                loops_breaker += 2
+
+                            else:
+                                continue
 
                         elif menu_option[1] == 2:
                             break

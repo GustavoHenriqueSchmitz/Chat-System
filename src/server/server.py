@@ -90,7 +90,32 @@ def handle_client(client_socket):
         elif message["request_type"] == "close_connection":
             client_socket.close()
             break
-
+            
+        elif message["request_type"] == "delete_user":
+            try:
+                database["users"].delete_user(
+                    message["data"]
+                )
+            except:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "Failed while trying to delete user, try again or later",
+                            "data": None,
+                            "error": True,
+                        }
+                    ).encode("utf-8")
+                )
+            else:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "User Deleted.",
+                            "data": None,
+                            "error": False,
+                        }
+                    ).encode("utf-8")
+                )
 
 while True:
     client, addr = server.accept()
