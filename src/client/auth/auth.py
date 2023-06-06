@@ -73,4 +73,35 @@ class Auth:
             except KeyboardInterrupt:
                 break
         os.system("cls" if os.name == "nt" else "clear")
-        return results["error"]
+        return results["status"]
+
+    @staticmethod
+    def delete_user(client, user_information):
+        while True:
+            confirm_deletion = str(input("Do you really want to delete your user? [Y/N]: ")).strip().lower()
+            if confirm_deletion != "y" and confirm_deletion != "n":
+                print("Invalid option, digit [Y/N]")
+                time.sleep(2)
+                continue
+            else:
+                break
+        
+        if confirm_deletion == "y":
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "delete_user",
+                        "data": user_information["phone_number"]
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(1024).decode("utf-8"))
+            print("------------------------------------------------")
+            print(results["message"])
+            time.sleep(3)
+            os.system("cls" if os.name == "nt" else "clear")
+            return results["status"]
+        
+        else:
+            os.system("cls" if os.name == "nt" else "clear")
+            return False

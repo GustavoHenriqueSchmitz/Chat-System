@@ -26,7 +26,7 @@ while True:
         login_results = Auth.login(client)
         user_information = login_results["data"]
 
-        if login_results["error"] == False:
+        if login_results["status"] == True:
             while True:
 
                 if loops_breaker > 0:
@@ -79,32 +79,10 @@ while True:
                             pass
 
                         elif menu_option[1] == 1:
-                            while True:
-                                confirm_deletion = str(input("Do you really want to delete your user? [Y/N]: ")).strip().lower()
-                                if confirm_deletion != "y" and confirm_deletion != "n":
-                                    print("Invalid option, digit [Y/N]")
-                                    time.sleep(2)
-                                    continue
-                                else:
-                                    break
-                            
-                            if confirm_deletion == "y":
-                                client.send(
-                                    json.dumps(
-                                        {
-                                            "request_type": "delete_user",
-                                            "data": user_information["phone_number"]
-                                        }
-                                    ).encode("utf-8")
-                                )
-                                results = json.loads(client.recv(1024).decode("utf-8"))
-                                print("------------------------------------------------")
-                                print(results["message"])
-                                time.sleep(3)
+                            status = Auth.delete_user(client, user_information)
+                            if status == True:
                                 loops_breaker += 2
-
-                            else:
-                                continue
+                            continue
 
                         elif menu_option[1] == 2:
                             break

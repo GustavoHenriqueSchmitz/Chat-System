@@ -22,7 +22,7 @@ def handle_client(client_socket):
             except:
                 client_socket.send(
                     json.dumps(
-                        {"message": "User not found.", "data": None, "error": True}
+                        {"message": "User not found.", "data": None, "status": False}
                     ).encode("utf-8")
                 )
             else:
@@ -32,7 +32,7 @@ def handle_client(client_socket):
                             {
                                 "message": "Login Successfully!",
                                 "data": user,
-                                "error": False,
+                                "status": True,
                             }
                         ).encode("utf-8")
                     )
@@ -42,7 +42,7 @@ def handle_client(client_socket):
                             {
                                 "message": "Invalid Password.",
                                 "data": None,
-                                "error": True,
+                                "status": False,
                             }
                         ).encode("utf-8")
                     )
@@ -63,7 +63,7 @@ def handle_client(client_socket):
                             {
                                 "message": "Error while trying to register, try again or later.",
                                 "data": None,
-                                "error": True,
+                                "status": False,
                             }
                         ).encode("utf-8")
                     )
@@ -73,7 +73,7 @@ def handle_client(client_socket):
                             {
                                 "message": "Registered successfully!",
                                 "data": None,
-                                "error": False,
+                                "status": True,
                             }
                         ).encode("utf-8")
                     )
@@ -83,7 +83,7 @@ def handle_client(client_socket):
                         {
                             "message": "This user already exists, try again or go to login.",
                             "data": None,
-                            "error": False,
+                            "status": False,
                         }
                     ).encode("utf-8")
                 )
@@ -102,7 +102,7 @@ def handle_client(client_socket):
                         {
                             "message": "Failed while trying to delete user, try again or later",
                             "data": None,
-                            "error": True,
+                            "status": False,
                         }
                     ).encode("utf-8")
                 )
@@ -112,7 +112,7 @@ def handle_client(client_socket):
                         {
                             "message": "User Deleted.",
                             "data": None,
-                            "error": False,
+                            "status": True,
                         }
                     ).encode("utf-8")
                 )
