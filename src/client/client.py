@@ -28,7 +28,6 @@ while True:
 
         if login_results["status"] == True:
             while True:
-
                 if loops_breaker > 0:
                     break
 
@@ -60,7 +59,6 @@ while True:
 
                 elif menu_option[1] == 4:
                     while True:
-
                         if loops_breaker > 0:
                             break
 
@@ -79,8 +77,8 @@ while True:
                             pass
 
                         elif menu_option[1] == 1:
-                            status = Auth.delete_user(client, user_information)
-                            if status == True:
+                            result = Auth.delete_user(client, user_information)
+                            if result["status"] == True:
                                 loops_breaker += 2
                             continue
 

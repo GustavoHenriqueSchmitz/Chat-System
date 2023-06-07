@@ -1,7 +1,7 @@
 import socket
 import threading
 import json
-import time
+from controllers.auth_controller import AuthController
 
 from database.database import init_database
 
@@ -17,105 +17,18 @@ def handle_client(client_socket):
         message = json.loads(json_data)
 
         if message["request_type"] == "login":
-            try:
-                user = database["users"].find_user(message["data"]["phone_number"])
-            except:
-                client_socket.send(
-                    json.dumps(
-                        {"message": "User not found.", "data": None, "status": False}
-                    ).encode("utf-8")
-                )
-            else:
-                if message["data"]["password"] == user["password"]:
-                    client_socket.send(
-                        json.dumps(
-                            {
-                                "message": "Login Successfully!",
-                                "data": user,
-                                "status": True,
-                            }
-                        ).encode("utf-8")
-                    )
-                else:
-                    client_socket.send(
-                        json.dumps(
-                            {
-                                "message": "Invalid Password.",
-                                "data": None,
-                                "status": False,
-                            }
-                        ).encode("utf-8")
-                    )
+            AuthController.login(client_socket, database, message)
 
         elif message["request_type"] == "sign_up":
-            try:
-                database["users"].find_user(message["data"]["phone_number"])
-            except:
-                try:
-                    database["users"].create_user(
-                        message["data"]["name"],
-                        message["data"]["phone_number"],
-                        message["data"]["password"],
-                    )
-                except:
-                    client_socket.send(
-                        json.dumps(
-                            {
-                                "message": "Error while trying to register, try again or later.",
-                                "data": None,
-                                "status": False,
-                            }
-                        ).encode("utf-8")
-                    )
-                else:
-                    client_socket.send(
-                        json.dumps(
-                            {
-                                "message": "Registered successfully!",
-                                "data": None,
-                                "status": True,
-                            }
-                        ).encode("utf-8")
-                    )
-            else:
-                client_socket.send(
-                    json.dumps(
-                        {
-                            "message": "This user already exists, try again or go to login.",
-                            "data": None,
-                            "status": False,
-                        }
-                    ).encode("utf-8")
-                )
+            AuthController.sign_up(client_socket, database, message)
+
+        elif message["request_type"] == "delete_user":
+            AuthController.delete_user(client_socket, database, message)
+
         elif message["request_type"] == "close_connection":
             client_socket.close()
             break
-            
-        elif message["request_type"] == "delete_user":
-            try:
-                database["users"].delete_user(
-                    message["data"]
-                )
-            except:
-                client_socket.send(
-                    json.dumps(
-                        {
-                            "message": "Failed while trying to delete user, try again or later",
-                            "data": None,
-                            "status": False,
-                        }
-                    ).encode("utf-8")
-                )
-            else:
-                client_socket.send(
-                    json.dumps(
-                        {
-                            "message": "User Deleted.",
-                            "data": None,
-                            "status": True,
-                        }
-                    ).encode("utf-8")
-                )
+
 
 while True:
     client, addr = server.accept()

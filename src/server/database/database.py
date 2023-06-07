@@ -22,7 +22,11 @@ def check_connection_status(connection):
 
 def init_database():
     connection = connect(
-        host="localhost", user="root", password="root", database="Chat-System"
+        host="localhost",
+        user="root",
+        password="root",
+        database="Chat-System",
+        port="3306",
     )
     connection_status_thread = threading.Thread(
         target=check_connection_status, args=(connection,)
