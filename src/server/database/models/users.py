@@ -43,6 +43,23 @@ class Users:
         else:
             return {"name": user[0], "phone_number": user[1], "password": user[2]}
 
+    def update_user(self, phone_number, new_phone_number, new_name, new_password):
+        self.database.execute(
+            """
+        UPDATE users
+        SET {} {} {}
+        WHERE phone_number = %s
+        """.format(
+                "name = '{}'".format(new_name) if new_name is not None else "",
+                "phone_number = '{}'".format(new_phone_number)
+                if new_phone_number is not None
+                else "",
+                "password = '{}'".format(new_password) if new_password is not None else ""
+            ),
+            (phone_number,),
+        )
+        self.connection.commit()
+
     def delete_user(self, phone_number):
         self.database.execute(
             """

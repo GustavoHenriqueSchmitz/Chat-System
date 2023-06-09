@@ -15,9 +15,9 @@ while True:
         [
             "Login",
             "Sign Up",
-            "Leave Program",
+            "Exit chat",
         ],
-        "Seja bem Vindo ao Chat",
+        "Chat System Login",
         "=>",
         0,
     )
@@ -40,7 +40,7 @@ while True:
                         "Settings",
                         "Exit Chat",
                     ],
-                    "Chat Options",
+                    f"Welcome to the chat, {login_results['data']['name']}!",
                     "=>",
                     0,
                 )
@@ -65,6 +65,8 @@ while True:
                         menu_option = selectMenu(
                             [
                                 "Change Name",
+                                "Change Number",
+                                "Change Password",
                                 "Delete User",
                                 "Return",
                             ],
@@ -74,15 +76,31 @@ while True:
                         )
 
                         if menu_option[1] == 0:
-                            pass
+                            result = Auth.change_name(client, user_information)
+
+                            if result["status"] == True:
+                                login_results["data"]["name"] = result["data"]
+
 
                         elif menu_option[1] == 1:
+                            result = Auth.change_phone_number(client, user_information)
+
+                            if result["status"] == True:
+                                login_results["data"]["phone_number"] = result["data"]
+                        
+                        elif menu_option[1] == 2:
+                            result = Auth.change_password(client, user_information)
+
+                            if result["status"] == True:
+                                login_results["data"]["password"] = result["data"]
+
+                        elif menu_option[1] == 3:
                             result = Auth.delete_user(client, user_information)
                             if result["status"] == True:
                                 loops_breaker += 2
                             continue
 
-                        elif menu_option[1] == 2:
+                        elif menu_option[1] == 4:
                             break
 
                 elif menu_option[1] == 5:
