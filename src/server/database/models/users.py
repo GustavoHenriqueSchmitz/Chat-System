@@ -54,7 +54,9 @@ class Users:
                 "phone_number = '{}'".format(new_phone_number)
                 if new_phone_number is not None
                 else "",
-                "password = '{}'".format(new_password) if new_password is not None else ""
+                "password = '{}'".format(new_password)
+                if new_password is not None
+                else "",
             ),
             (phone_number,),
         )

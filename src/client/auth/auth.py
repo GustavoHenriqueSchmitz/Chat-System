@@ -100,7 +100,7 @@ class Auth:
         time.sleep(2.5)
         os.system("cls" if os.name == "nt" else "clear")
         return results
-    
+
     @staticmethod
     def change_phone_number(client, user_information):
         try:
@@ -165,7 +165,6 @@ class Auth:
             except KeyboardInterrupt:
                 os.system("cls" if os.name == "nt" else "clear")
                 return {"message": None, "data": None, "status": False}
-
 
     @staticmethod
     def delete_user(client, user_information):

@@ -81,13 +81,12 @@ while True:
                             if result["status"] == True:
                                 login_results["data"]["name"] = result["data"]
 
-
                         elif menu_option[1] == 1:
                             result = Auth.change_phone_number(client, user_information)
 
                             if result["status"] == True:
                                 login_results["data"]["phone_number"] = result["data"]
-                        
+
                         elif menu_option[1] == 2:
                             result = Auth.change_password(client, user_information)
 

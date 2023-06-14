@@ -13,3 +13,54 @@ class Chats:
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         """
         )
+
+    def create_chat(self, name, chat_type):
+        self.database.execute(
+            """
+            insert into chats (name, chat_type)
+            values (%s, %s)
+        """,
+            (name, chat_type),
+        )
+        self.connection.commit()
+
+    def find_user(self, id):
+        self.database.execute(
+            """
+            select name, chat_type from chats
+            where id = %s
+        """,
+            (id,),
+        )
+        user = self.database.fetchone()
+        self.connection.commit()
+
+        if user == None:
+            raise Exception("Chat not found.")
+        else:
+            return {"name": user[0], "chat_type": user[1]}
+
+    def update_user(self, id, new_name, new_chat_type):
+        self.database.execute(
+            """
+        UPDATE chats
+        SET {} {}
+        WHERE id = %s
+        """.format(
+                "name = '{}'".format(new_name) if new_name is not None else "",
+                "chat_type = '{}'".format(new_chat_type)
+                if new_chat_type is not None
+                else "",
+            ),
+            (id,),
+        )
+        self.connection.commit()
+
+    def delete_user(self, id):
+        self.database.execute(
+            """
+            delete from chats where id = %s
+            """,
+            (id,),
+        )
+        self.connection.commit()

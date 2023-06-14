@@ -24,10 +24,10 @@ def handle_client(client_socket):
 
         elif message["request_type"] == "change_user_name":
             AuthController.change_name(client_socket, database, message)
-        
+
         elif message["request_type"] == "change_user_phone_number":
             AuthController.change_phone_number(client_socket, database, message)
-        
+
         elif message["request_type"] == "change_user_password":
             AuthController.change_password(client_socket, database, message)
 

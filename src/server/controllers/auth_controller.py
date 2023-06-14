@@ -107,12 +107,15 @@ class AuthController:
                     }
                 ).encode("utf-8")
             )
-    
+
     @staticmethod
     def change_phone_number(client_socket, database, message):
         try:
             database["users"].update_user(
-                message["data"]["phone_number"], message["data"]["new_phone_number"], None, None
+                message["data"]["phone_number"],
+                message["data"]["new_phone_number"],
+                None,
+                None,
             )
         except mysql.connector.Error as error:
             if error.errno == errorcode.ER_DUP_ENTRY:
@@ -148,12 +151,15 @@ class AuthController:
                 ).encode("utf-8")
             )
             return
-    
+
     @staticmethod
     def change_password(client_socket, database, message):
         try:
             database["users"].update_user(
-                message["data"]["phone_number"], None, None, message["data"]["new_password"]
+                message["data"]["phone_number"],
+                None,
+                None,
+                message["data"]["new_password"],
             )
         except:
             client_socket.send(
