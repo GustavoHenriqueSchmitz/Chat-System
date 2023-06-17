@@ -24,23 +24,23 @@ class Chats:
         )
         self.connection.commit()
 
-    def find_user(self, id):
+    def find_chat(self, id):
         self.database.execute(
             """
-            select name, chat_type from chats
+            select id, name, chat_type from chats
             where id = %s
         """,
             (id,),
         )
-        user = self.database.fetchone()
+        chat = self.database.fetchone()
         self.connection.commit()
 
-        if user == None:
+        if chat == None:
             raise Exception("Chat not found.")
         else:
-            return {"name": user[0], "chat_type": user[1]}
+            return {"id": chat[0], "name": chat[1], "chat_type": chat[2]}
 
-    def update_user(self, id, new_name, new_chat_type):
+    def update_chat(self, id, new_name, new_chat_type):
         self.database.execute(
             """
         UPDATE chats
@@ -56,7 +56,7 @@ class Chats:
         )
         self.connection.commit()
 
-    def delete_user(self, id):
+    def delete_chat(self, id):
         self.database.execute(
             """
             delete from chats where id = %s

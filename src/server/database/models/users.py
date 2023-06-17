@@ -30,7 +30,7 @@ class Users:
     def find_user(self, phone_number):
         self.database.execute(
             """
-            select name, phone_number, password from users
+            select id, name, phone_number, password from users
             where phone_number = %s
         """,
             (phone_number,),
@@ -41,7 +41,7 @@ class Users:
         if user == None:
             raise Exception("User not found.")
         else:
-            return {"name": user[0], "phone_number": user[1], "password": user[2]}
+            return {"id": user[0], "name": user[1], "phone_number": user[2], "password": user[3]}
 
     def update_user(self, phone_number, new_phone_number, new_name, new_password):
         self.database.execute(

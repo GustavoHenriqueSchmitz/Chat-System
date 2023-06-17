@@ -1,7 +1,8 @@
 import socket
-import time
 from pick import pick as selectMenu
 from auth.auth import Auth
+from user.user import User
+from chat.chat import Chat
 import os
 import json
 
@@ -52,7 +53,7 @@ while True:
                     pass
 
                 elif menu_option[1] == 2:
-                    pass
+                    Chat.create_chat(client, user_information)
 
                 elif menu_option[1] == 3:
                     pass
@@ -76,25 +77,25 @@ while True:
                         )
 
                         if menu_option[1] == 0:
-                            result = Auth.change_name(client, user_information)
+                            result = User.change_name(client, user_information)
 
                             if result["status"] == True:
                                 login_results["data"]["name"] = result["data"]
 
                         elif menu_option[1] == 1:
-                            result = Auth.change_phone_number(client, user_information)
+                            result = User.change_phone_number(client, user_information)
 
                             if result["status"] == True:
                                 login_results["data"]["phone_number"] = result["data"]
 
                         elif menu_option[1] == 2:
-                            result = Auth.change_password(client, user_information)
+                            result = User.change_password(client, user_information)
 
                             if result["status"] == True:
                                 login_results["data"]["password"] = result["data"]
 
                         elif menu_option[1] == 3:
-                            result = Auth.delete_user(client, user_information)
+                            result = User.delete_user(client, user_information)
                             if result["status"] == True:
                                 loops_breaker += 2
                             continue
