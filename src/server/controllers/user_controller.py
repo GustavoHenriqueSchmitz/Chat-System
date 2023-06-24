@@ -2,6 +2,7 @@ import json
 import mysql.connector
 from mysql.connector import errorcode
 
+
 class UserController:
     @staticmethod
     def change_name(client_socket, database, message):

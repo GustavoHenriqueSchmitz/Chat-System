@@ -1,5 +1,6 @@
 class UsersChats:
     def __init__(self, connection):
+        self.connection = connection
         self.database = connection.cursor()
         self.create_table()
 
@@ -20,7 +21,7 @@ class UsersChats:
     def create_user_chat(self, id_user, id_chat):
         self.database.execute(
             """
-            insert into user_chats (id_user, id_chat)
+            insert into users_chats (id_user, id_chat)
             values (%s, %s)
         """,
             (id_user, id_chat),
@@ -30,7 +31,7 @@ class UsersChats:
     def find_user_chat(self, id):
         self.database.execute(
             """
-            select id, id_user, id_chat from user_chats
+            select id, id_user, id_chat from users_chats
             where id = %s
         """,
             (id,),
@@ -62,7 +63,7 @@ class UsersChats:
     def delete_user_chat(self, id):
         self.database.execute(
             """
-            delete from user_chats where id = %s
+            delete from users_chats where id = %s
             """,
             (id,),
         )

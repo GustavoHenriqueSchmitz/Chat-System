@@ -3,15 +3,14 @@ import os
 import json
 from phonenumbers import parse, NumberParseException
 
+
 class Chat:
     @staticmethod
     def create_chat(client, user_information):
         try:
             print("-------- Create Chat --------\n => ctrl+c to cancel...")
             while True:
-                chat_user = (
-                    str(input("Add User [Phone Number]: ")).strip()
-                )
+                chat_user = str(input("Add User [Phone Number]: ")).strip()
                 try:
                     parse(chat_user, None)
                     break
@@ -25,7 +24,11 @@ class Chat:
                 json.dumps(
                     {
                         "request_type": "create_chat",
-                        "data": {"user_id": user_information["id"], "added_user_phone_number": chat_user, "chat_name": chat_name},
+                        "data": {
+                            "user_id": user_information["id"],
+                            "added_user_phone_number": chat_user,
+                            "chat_name": chat_name,
+                        },
                     }
                 ).encode("utf-8")
             )

@@ -37,6 +37,6 @@ def init_database():
         "users": Users(connection),
         "chats": Chats(connection),
         "messages": Messages(connection),
-        "user_chats": UsersChats(connection),
+        "users_chats": UsersChats(connection),
     }
     return database

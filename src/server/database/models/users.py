@@ -41,7 +41,12 @@ class Users:
         if user == None:
             raise Exception("User not found.")
         else:
-            return {"id": user[0], "name": user[1], "phone_number": user[2], "password": user[3]}
+            return {
+                "id": user[0],
+                "name": user[1],
+                "phone_number": user[2],
+                "password": user[3],
+            }
 
     def update_user(self, phone_number, new_phone_number, new_name, new_password):
         self.database.execute(
