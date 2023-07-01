@@ -36,6 +36,9 @@ def handle_client(client_socket):
         elif message["request_type"] == "delete_user":
             UserController.delete_user(client_socket, database, message)
 
+        elif message["request_type"] == "find_chats":
+            ChatController.find_chats(client_socket, database, message)
+
         elif message["request_type"] == "create_chat":
             ChatController.create_chat(client_socket, database, message)
 

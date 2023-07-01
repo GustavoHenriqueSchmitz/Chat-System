@@ -26,27 +26,45 @@ class Users:
             (name, phone_number, password),
         )
         self.connection.commit()
-
-    def find_user(self, phone_number):
+    
+    def find_users(self, id, phone_number):
         self.database.execute(
             """
             select id, name, phone_number, password from users
-            where phone_number = %s
-        """,
-            (phone_number,),
+            where 1=1 {} {}
+        """.format(
+                "and id = '{}'".format(id)
+                if id is not None
+                else "",
+                "and phone_number = '{}'".format(phone_number)
+                if phone_number is not None
+                else "",
+            ),
         )
-        user = self.database.fetchone()
+        users = self.database.fetchall()
         self.connection.commit()
 
-        if user == None:
-            raise Exception("User not found.")
-        else:
+        if id is not None or phone_number is not None:
+            if users == []:
+                raise Exception("User not found")
             return {
-                "id": user[0],
-                "name": user[1],
-                "phone_number": user[2],
-                "password": user[3],
+                "id": users[0][0],
+                "name": users[0][1],
+                "phone_number": users[0][2],
+                "password": users[0][3],
             }
+        else:
+            users_formatted = []
+            for user in users:
+                users_formatted.append(
+                    {
+                        "id": user[0],
+                        "name": user[1],
+                        "phone_number": user[2],
+                        "password": user[3],
+                    }
+                )
+            return users_formatted
 
     def update_user(self, phone_number, new_phone_number, new_name, new_password):
         self.database.execute(

@@ -27,22 +27,34 @@ class UsersChats:
             (id_user, id_chat),
         )
         self.connection.commit()
-
-    def find_user_chat(self, id):
+    
+    def find_users_chats(self, id_user, id_chat):
         self.database.execute(
             """
             select id, id_user, id_chat from users_chats
-            where id = %s
-        """,
-            (id,),
+            where 1=1 {} {}
+        """.format(
+                "and id_user = '{}'".format(id_user)
+                if id_user is not None
+                else "",
+                "and id_chat = '{}'".format(id_chat)
+                if id_chat is not None
+                else "",
+            ),
         )
-        message = self.database.fetchone()
+        users_chats = self.database.fetchall()
         self.connection.commit()
 
-        if message == None:
-            raise Exception("Message not found.")
-        else:
-            return {"id": message[0], "id_user": message[1], "id_chat": message[2]}
+        users_chats_formatted = []
+        for user_chat in users_chats:
+            users_chats_formatted.append(
+                {
+                    "id": user_chat[0],
+                    "id_user": user_chat[1],
+                    "id_chat": user_chat[2],
+                }
+            )
+        return users_chats_formatted
 
     def update_user_chat(self, id, new_id_user, new_id_chat):
         self.database.execute(

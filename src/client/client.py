@@ -47,7 +47,25 @@ while True:
                 )
 
                 if menu_option[1] == 0:
-                    pass
+                    result = Chat.find_chats(client, user_information)
+                    if result["status"] == True:
+                        
+                        chats_names = []
+                        for chat in result["data"]:
+                            chats_names.append(chat["name"])
+
+                        while True:
+                            try:
+                                menu_option = selectMenu(
+                                    chats_names,
+                                    "Chats | ctrl+c to return",
+                                    "=>",
+                                    0,
+                                )
+                            except KeyboardInterrupt:
+                                os.system("cls" if os.name == "nt" else "clear")
+                                break
+
 
                 elif menu_option[1] == 1:
                     pass

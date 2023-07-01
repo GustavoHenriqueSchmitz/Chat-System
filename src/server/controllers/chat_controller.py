@@ -6,9 +6,38 @@ from mysql.connector import errorcode
 
 class ChatController:
     @staticmethod
+    def find_chats(client_socket, database, message):
+        try:
+            users_chats = database["users_chats"].find_users_chats(message["data"]["user_id"], None)
+            chats = []
+            for user_chat in users_chats:
+                chats.append(database["chats"].find_chats(user_chat["id_chat"], None))
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "There was a problem while finding your chats, try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+        else:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "Chats found with success",
+                        "data": chats,
+                        "status": True,
+                    }
+                ).encode("utf-8")
+            )
+
+    @staticmethod
     def create_chat(client_socket, database, message):
         try:
-            user = database["users"].find_user(
+            user = database["users"].find_users(
+                None,
                 message["data"]["added_user_phone_number"]
             )
         except:
@@ -46,7 +75,7 @@ class ChatController:
                 )
             else:
                 try:
-                    chat = database["chats"].find_chat(chat_code)
+                    chat = database["chats"].find_chats(chat_code)
                 except:
                     client_socket.send(
                         json.dumps(

@@ -6,6 +6,30 @@ from phonenumbers import parse, NumberParseException
 
 class Chat:
     @staticmethod
+    def find_chats(client, user_information):
+        try:
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "find_chats",
+                        "data": {
+                            "user_id": user_information["id"],
+                        },
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(1024).decode("utf-8"))
+            if results["status"] == False:
+                print("------------------------------------------------")
+                print(results["message"])
+                time.sleep(2.5)
+            os.system("cls" if os.name == "nt" else "clear")
+            return results
+        except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}
+
+    @staticmethod
     def create_chat(client, user_information):
         try:
             print("-------- Create Chat --------\n => ctrl+c to cancel...")

@@ -26,42 +26,44 @@ class Chats:
         )
         self.connection.commit()
 
-    def find_chats(self):
+    def find_chats(self, id, chat_code):
         self.database.execute(
             """
             select id, name, chat_type, chat_code from chats
-            """
+            where 1=1 {} {}
+        """.format(
+                "and id = '{}'".format(id)
+                if id is not None
+                else "",
+                "and chat_code = '{}'".format(chat_code)
+                if chat_code is not None
+                else "",
+            ),
         )
         chats = self.database.fetchall()
         self.connection.commit()
 
-        chats_formatted = []
-        for chat in chats:
-            chats_formatted.append(
-                {
-                    "id": chat[0],
-                    "name": chat[1],
-                    "chat_type": chat[2],
-                    "chat_code": chat[3],
-                }
-            )
-        return chats_formatted
-
-    def find_chat(self, chat_code):
-        self.database.execute(
-            """
-            select id, name, chat_type, chat_code from chats
-            where chat_code = %s
-        """,
-            (chat_code,),
-        )
-        chat = self.database.fetchone()
-        self.connection.commit()
-
-        if chat == None:
-            raise Exception("Chat not found.")
+        if id is not None or chat_code is not None:
+            if chats == []:
+                raise Exception("Chat not found")
+            return {
+                "id": chats[0][0],
+                "name": chats[0][1],
+                "chat_type": chats[0][2],
+                "chat_code": chats[0][3],
+            }
         else:
-            return {"id": chat[0], "name": chat[1], "chat_type": chat[2]}
+            chats_formatted = []
+            for chat in chats:
+                chats_formatted.append(
+                    {
+                        "id": chat[0],
+                        "name": chat[1],
+                        "chat_type": chat[2],
+                        "chat_code": chat[3],
+                    }
+                )
+            return chats_formatted
 
     def update_chat(self, chat_code, new_name, new_chat_type):
         self.database.execute(

@@ -7,7 +7,7 @@ class AuthController:
     @staticmethod
     def login(client_socket, database, message):
         try:
-            user = database["users"].find_user(message["data"]["phone_number"])
+            user = database["users"].find_users(None, message["data"]["phone_number"])
         except:
             client_socket.send(
                 json.dumps(
