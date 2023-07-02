@@ -101,17 +101,21 @@ class User:
     def delete_user(client, user_information):
         print("-------- Delete User --------\n => ctrl+c to cancel...")
         while True:
-            confirm_deletion = (
-                str(input("Do you really want to delete your user? [Y/N]: "))
-                .strip()
-                .lower()
-            )
-            if confirm_deletion != "y" and confirm_deletion != "n":
-                print("Invalid option, digit [Y/N]")
-                time.sleep(2)
-                continue
-            else:
-                break
+            try:
+                confirm_deletion = (
+                    str(input("Do you really want to delete your user? [Y/N]: "))
+                    .strip()
+                    .lower()
+                )
+                if confirm_deletion != "y" and confirm_deletion != "n":
+                    print("Invalid option, digit [Y/N]")
+                    time.sleep(2)
+                    continue
+                else:
+                    break
+            except KeyboardInterrupt:
+                os.system("cls" if os.name == "nt" else "clear")
+                return {"message": None, "data": None, "status": False}
 
         if confirm_deletion == "y":
             client.send(

@@ -12,16 +12,29 @@ client.connect(("localhost", 9999))
 while True:
     loops_breaker = 0
     os.system("cls" if os.name == "nt" else "clear")
-    menu_option = selectMenu(
-        [
-            "Login",
-            "Sign Up",
-            "Exit chat",
-        ],
-        "Chat System Login",
-        "=>",
-        0,
-    )
+
+    try:
+        menu_option = selectMenu(
+            [
+                "Login",
+                "Sign Up",
+            ],
+            "Chat System Login | ctrl+c to exit",
+            "=>",
+            0,
+        )
+    except KeyboardInterrupt:
+        client.send(
+            json.dumps(
+                {
+                    "request_type": "close_connection",
+                    "data": None,
+                }
+            ).encode("utf-8")
+        )
+        os.system("cls" if os.name == "nt" else "clear")
+        client.close()
+        exit()
 
     if menu_option[1] == 0:
         login_results = Auth.login(client)
@@ -31,20 +44,32 @@ while True:
             while True:
                 if loops_breaker > 0:
                     break
-
-                menu_option = selectMenu(
-                    [
-                        "Chats",
-                        "Groups",
-                        "Create Chat",
-                        "Create Group",
-                        "Settings",
-                        "Exit Chat",
-                    ],
-                    f"Welcome to the chat, {login_results['data']['name']}!",
-                    "=>",
-                    0,
-                )
+                
+                try:
+                    menu_option = selectMenu(
+                        [
+                            "Chats",
+                            "Groups",
+                            "Create Chat",
+                            "Create Group",
+                            "Settings",
+                        ],
+                        f"Welcome to the chat, {login_results['data']['name']}! | ctrl+c to exit",
+                        "=>",
+                        0,
+                    )
+                except KeyboardInterrupt:
+                    client.send(
+                        json.dumps(
+                            {
+                                "request_type": "close_connection",
+                                "data": None,
+                            }
+                        ).encode("utf-8")
+                    )
+                    os.system("cls" if os.name == "nt" else "clear")
+                    client.close()
+                    exit()
 
                 if menu_option[1] == 0:
                     result = Chat.find_chats(client, user_information)
@@ -80,19 +105,21 @@ while True:
                     while True:
                         if loops_breaker > 0:
                             break
-
-                        menu_option = selectMenu(
-                            [
-                                "Change Name",
-                                "Change Number",
-                                "Change Password",
-                                "Delete User",
-                                "Return",
-                            ],
-                            "Chat Settings",
-                            "=>",
-                            0,
-                        )
+                        
+                        try:
+                            menu_option = selectMenu(
+                                [
+                                    "Change Name",
+                                    "Change Number",
+                                    "Change Password",
+                                    "Delete User",
+                                ],
+                                "Chat Settings",
+                                "=>",
+                                0,
+                            )
+                        except KeyboardInterrupt:
+                            break
 
                         if menu_option[1] == 0:
                             result = User.change_name(client, user_information)
@@ -118,34 +145,5 @@ while True:
                                 loops_breaker += 2
                             continue
 
-                        elif menu_option[1] == 4:
-                            break
-
-                elif menu_option[1] == 5:
-                    client.send(
-                        json.dumps(
-                            {
-                                "request_type": "close_connection",
-                                "data": None,
-                            }
-                        ).encode("utf-8")
-                    )
-                    os.system("cls" if os.name == "nt" else "clear")
-                    client.close()
-                    exit()
-
     elif menu_option[1] == 1:
         Auth.sign_up(client)
-
-    elif menu_option[1] == 2:
-        client.send(
-            json.dumps(
-                {
-                    "request_type": "close_connection",
-                    "data": None,
-                }
-            ).encode("utf-8")
-        )
-        os.system("cls" if os.name == "nt" else "clear")
-        client.close()
-        exit()
