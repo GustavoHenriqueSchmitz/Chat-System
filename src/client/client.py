@@ -44,7 +44,7 @@ while True:
             while True:
                 if loops_breaker > 0:
                     break
-                
+
                 try:
                     menu_option = selectMenu(
                         [
@@ -72,9 +72,8 @@ while True:
                     exit()
 
                 if menu_option[1] == 0:
-                    result = Chat.find_chats(client, user_information)
+                    result = Chat.find_chats(client, user_information, "chat")
                     if result["status"] == True:
-                        
                         chats_names = []
                         for chat in result["data"]:
                             chats_names.append(chat["name"])
@@ -91,21 +90,36 @@ while True:
                                 os.system("cls" if os.name == "nt" else "clear")
                                 break
 
-
                 elif menu_option[1] == 1:
-                    pass
+                    result = Chat.find_chats(client, user_information, "group")
+                    if result["status"] == True:
+                        chats_names = []
+                        for chat in result["data"]:
+                            chats_names.append(chat["name"])
+
+                        while True:
+                            try:
+                                menu_option = selectMenu(
+                                    chats_names,
+                                    "Groups | ctrl+c to return",
+                                    "=>",
+                                    0,
+                                )
+                            except KeyboardInterrupt:
+                                os.system("cls" if os.name == "nt" else "clear")
+                                break
 
                 elif menu_option[1] == 2:
                     Chat.create_chat(client, user_information)
 
                 elif menu_option[1] == 3:
-                    pass
+                    Chat.create_group(client, user_information)
 
                 elif menu_option[1] == 4:
                     while True:
                         if loops_breaker > 0:
                             break
-                        
+
                         try:
                             menu_option = selectMenu(
                                 [

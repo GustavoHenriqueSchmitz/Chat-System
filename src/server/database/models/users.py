@@ -26,16 +26,14 @@ class Users:
             (name, phone_number, password),
         )
         self.connection.commit()
-    
-    def find_users(self, id, phone_number):
+
+    def find_users(self, id=None, phone_number=None):
         self.database.execute(
             """
             select id, name, phone_number, password from users
             where 1=1 {} {}
         """.format(
-                "and id = '{}'".format(id)
-                if id is not None
-                else "",
+                "and id = '{}'".format(id) if id is not None else "",
                 "and phone_number = '{}'".format(phone_number)
                 if phone_number is not None
                 else "",
@@ -66,7 +64,7 @@ class Users:
                 )
             return users_formatted
 
-    def update_user(self, phone_number, new_phone_number, new_name, new_password):
+    def update_user(self, phone_number, new_phone_number=None, new_name=None, new_password=None):
         self.database.execute(
             """
         UPDATE users

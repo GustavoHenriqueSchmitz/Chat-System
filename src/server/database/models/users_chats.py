@@ -27,19 +27,15 @@ class UsersChats:
             (id_user, id_chat),
         )
         self.connection.commit()
-    
-    def find_users_chats(self, id_user, id_chat):
+
+    def find_users_chats(self, id_user=None, id_chat=None):
         self.database.execute(
             """
             select id, id_user, id_chat from users_chats
             where 1=1 {} {}
         """.format(
-                "and id_user = '{}'".format(id_user)
-                if id_user is not None
-                else "",
-                "and id_chat = '{}'".format(id_chat)
-                if id_chat is not None
-                else "",
+                "and id_user = '{}'".format(id_user) if id_user is not None else "",
+                "and id_chat = '{}'".format(id_chat) if id_chat is not None else "",
             ),
         )
         users_chats = self.database.fetchall()
@@ -56,7 +52,7 @@ class UsersChats:
             )
         return users_chats_formatted
 
-    def update_user_chat(self, id, new_id_user, new_id_chat):
+    def update_user_chat(self, id, new_id_user=None, new_id_chat=None):
         self.database.execute(
             """
         UPDATE messages

@@ -28,30 +28,29 @@ class Messages:
             (content, id_sender, id_chat, send_date),
         )
         self.connection.commit()
-
-    def find_message(self, id):
+    
+    def find_messages(self):
         self.database.execute(
             """
             select id, content, id_sender, id_chat, send_date from messages
-            where id = %s
-        """,
-            (id,),
+        """
         )
-        message = self.database.fetchone()
+        messages = self.database.fetchall()
         self.connection.commit()
 
-        if message == None:
-            raise Exception("Message not found.")
-        else:
-            return {
-                "id": message[0],
-                "content": message[1],
-                "id_sender": message[2],
-                "id_chat": message[3],
-                "send_date": message[4],
-            }
+        messages_formatted = []
+        for message in messages:
+            messages_formatted.append(
+                {
+                    "id": message[0],
+                    "name": message[1],
+                    "phone_number": message[2],
+                    "password": message[3],
+                }
+            )
+        return messages_formatted
 
-    def update_message(self, id, content, id_sender, id_chat, send_date):
+    def update_message(self, id, content=None, id_sender=None, id_chat=None, send_date=None):
         self.database.execute(
             """
         UPDATE messages

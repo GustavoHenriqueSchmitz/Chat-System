@@ -1,4 +1,7 @@
 class Chats:
+    class ChatNotFoundError(Exception):
+        pass
+
     def __init__(self, connection):
         self.connection = connection
         self.database = connection.cursor()
@@ -26,14 +29,15 @@ class Chats:
         )
         self.connection.commit()
 
-    def find_chats(self, id, chat_code):
+    def find_chats(self, id=None, chat_code=None, chat_type=None):
         self.database.execute(
             """
             select id, name, chat_type, chat_code from chats
-            where 1=1 {} {}
+            where 1=1 {} {} {}
         """.format(
-                "and id = '{}'".format(id)
-                if id is not None
+                "and id = '{}'".format(id) if id is not None else "",
+                "and chat_type = '{}'".format(chat_type)
+                if chat_type is not None
                 else "",
                 "and chat_code = '{}'".format(chat_code)
                 if chat_code is not None
@@ -45,13 +49,14 @@ class Chats:
 
         if id is not None or chat_code is not None:
             if chats == []:
-                raise Exception("Chat not found")
-            return {
-                "id": chats[0][0],
-                "name": chats[0][1],
-                "chat_type": chats[0][2],
-                "chat_code": chats[0][3],
-            }
+                raise self.ChatNotFoundError("Chat not Found")
+            else:
+                return {
+                    "id": chats[0][0],
+                    "name": chats[0][1],
+                    "chat_type": chats[0][2],
+                    "chat_code": chats[0][3],
+                }
         else:
             chats_formatted = []
             for chat in chats:
@@ -65,7 +70,7 @@ class Chats:
                 )
             return chats_formatted
 
-    def update_chat(self, chat_code, new_name, new_chat_type):
+    def update_chat(self, chat_code, new_name=None, new_chat_type=None):
         self.database.execute(
             """
         UPDATE chats
