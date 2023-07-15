@@ -43,7 +43,7 @@ class Chat:
                     print("Invalid Phone Number")
                     print("------------------------------------------------")
                     continue
-            group_name = str(input("Chat Name: ")).strip()
+            chat_name = str(input("Chat Name: ")).strip()
 
             client.send(
                 json.dumps(
@@ -52,7 +52,7 @@ class Chat:
                         "data": {
                             "user_id": user_information["id"],
                             "added_user_phone_number": chat_user,
-                            "group_name": group_name,
+                            "chat_name": chat_name,
                         },
                     }
                 ).encode("utf-8")
@@ -66,7 +66,7 @@ class Chat:
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
-        
+
     @staticmethod
     def create_group(client, user_information):
         try:

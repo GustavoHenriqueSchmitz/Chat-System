@@ -1,5 +1,6 @@
 import json
 import secrets
+import uuid
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -14,10 +15,14 @@ class ChatController:
             chats = []
             for user_chat in users_chats:
                 try:
-                    chats.append(database["chats"].find_chats(user_chat["id_chat"], None, message["data"]["chat_type"]))
+                    chat = database["chats"].find_chats(
+                        user_chat["id_chat"], message["data"]["chat_type"]
+                    )
+                    if chat not in chats:
+                        chats.append(chat)
                 except database["chats"].ChatNotFoundError:
                     pass
-        except Exception as e:
+        except:
             client_socket.send(
                 json.dumps(
                     {
@@ -28,15 +33,30 @@ class ChatController:
                 ).encode("utf-8")
             )
         else:
-            client_socket.send(
-                json.dumps(
-                    {
-                        "message": "Chats found with success",
-                        "data": chats,
-                        "status": True,
-                    }
-                ).encode("utf-8")
-            )
+            if chats != []:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "Chats found with success"
+                            if message["data"]["chat_type"] == "chat"
+                            else "Groups found with success",
+                            "data": chats,
+                            "status": True,
+                        }
+                    ).encode("utf-8")
+                )
+            else:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "No chats found"
+                            if message["data"]["chat_type"] == "chat"
+                            else "No groups found",
+                            "data": chats,
+                            "status": False,
+                        }
+                    ).encode("utf-8")
+                )
 
     @staticmethod
     def create_chat(client_socket, database, message):
@@ -56,22 +76,21 @@ class ChatController:
             )
         else:
             try:
-                chats = database["chats"].find_chats()
-                chat_codes = []
-                for chat in chats:
-                    chat_codes.append(chat["chat_code"])
-                while True:
-                    chat_code = secrets.token_hex(30)
-                    if chat_code not in chat_codes:
-                        break
-                database["chats"].create_chat(
-                    message["data"]["chat_name"], "chat", chat_code
+                users_chats_user = database["users_chats"].find_users_chats(
+                    message["data"]["user_id"], None
                 )
+                users_chats_added_user = database["users_chats"].find_users_chats(
+                    user["id"], None
+                )
+                for user_chat_user in users_chats_user:
+                    for user_chat_added_user in users_chats_added_user:
+                        if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
+                            raise
             except:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": "Failed while trying to create the chat.",
+                            "message": "This chat already exist.",
                             "data": None,
                             "status": False,
                         }
@@ -79,8 +98,12 @@ class ChatController:
                 )
             else:
                 try:
-                    chat = database["chats"].find_chats(chat_code)
-                except:
+                    chat_id = str(uuid.uuid4())
+                    database["chats"].create_chat(
+                        chat_id, message["data"]["chat_name"], "chat"
+                    )
+                except Exception as e:
+                    print(e)
                     client_socket.send(
                         json.dumps(
                             {
@@ -92,57 +115,69 @@ class ChatController:
                     )
                 else:
                     try:
-                        database["users_chats"].create_user_chat(
-                            message["data"]["user_id"],
-                            chat["id"],
+                        chat = database["chats"].find_chats(chat_id, None)
+                    except Exception as e:
+                        print(e)
+                        client_socket.send(
+                            json.dumps(
+                                {
+                                    "message": "Failed while trying to create the chat.",
+                                    "data": None,
+                                    "status": False,
+                                }
+                            ).encode("utf-8")
                         )
-                        database["users_chats"].create_user_chat(
-                            user["id"],
-                            chat["id"],
-                        )
-                    except mysql.connector.Error as error:
-                        if error.errno == errorcode.ER_DUP_ENTRY:
-                            client_socket.send(
-                                json.dumps(
-                                    {
-                                        "message": "This chat already exists, try another.",
-                                        "data": None,
-                                        "status": False,
-                                    }
-                                ).encode("utf-8")
+                    else:
+                        try:
+                            database["users_chats"].create_user_chat(
+                                message["data"]["user_id"],
+                                chat["id"],
                             )
-                            return
+                            database["users_chats"].create_user_chat(
+                                user["id"],
+                                chat["id"],
+                            )
+                        except mysql.connector.Error as error:
+                            if error.errno == errorcode.ER_DUP_ENTRY:
+                                client_socket.send(
+                                    json.dumps(
+                                        {
+                                            "message": "This chat already exists, try another.",
+                                            "data": None,
+                                            "status": False,
+                                        }
+                                    ).encode("utf-8")
+                                )
+                                return
+                            else:
+                                client_socket.send(
+                                    json.dumps(
+                                        {
+                                            "message": "Error while trying to create chat, try again or later.",
+                                            "data": None,
+                                            "status": False,
+                                        }
+                                    ).encode("utf-8")
+                                )
+                                return
                         else:
                             client_socket.send(
                                 json.dumps(
                                     {
-                                        "message": "Error while trying to create chat, try again or later.",
+                                        "message": "Chat created with success",
                                         "data": None,
-                                        "status": False,
+                                        "status": True,
                                     }
                                 ).encode("utf-8")
                             )
                             return
-                    else:
-                        client_socket.send(
-                            json.dumps(
-                                {
-                                    "message": "Chat created with success",
-                                    "data": None,
-                                    "status": True,
-                                }
-                            ).encode("utf-8")
-                        )
-                        return
 
     @staticmethod
     def create_group(client_socket, database, message):
         try:
             users = []
             for added_user in message["data"]["added_users_phone_number"]:
-                user = database["users"].find_users(
-                    None, added_user
-                )
+                user = database["users"].find_users(None, added_user)
                 users.append(user)
         except:
             client_socket.send(
@@ -157,15 +192,15 @@ class ChatController:
         else:
             try:
                 chats = database["chats"].find_chats()
-                chat_codes = []
+                chat_ids = []
                 for chat in chats:
-                    chat_codes.append(chat["chat_code"])
+                    chat_ids.append(chat["chat_id"])
                 while True:
-                    chat_code = secrets.token_hex(30)
-                    if chat_code not in chat_codes:
+                    chat_id = secrets.token_hex(30)
+                    if chat_id not in chat_ids:
                         break
                 database["chats"].create_chat(
-                    message["data"]["group_name"], "group", chat_code
+                    message["data"]["group_name"], "group", chat_id
                 )
             except:
                 client_socket.send(
@@ -179,7 +214,7 @@ class ChatController:
                 )
             else:
                 try:
-                    chat = database["chats"].find_chats(chat_code=chat_code)
+                    chat = database["chats"].find_chats(chat_id=chat_id)
                 except:
                     client_socket.send(
                         json.dumps(

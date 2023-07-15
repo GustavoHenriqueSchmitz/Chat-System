@@ -64,7 +64,9 @@ class Users:
                 )
             return users_formatted
 
-    def update_user(self, phone_number, new_phone_number=None, new_name=None, new_password=None):
+    def update_user(
+        self, phone_number, new_phone_number=None, new_name=None, new_password=None
+    ):
         self.database.execute(
             """
         UPDATE users

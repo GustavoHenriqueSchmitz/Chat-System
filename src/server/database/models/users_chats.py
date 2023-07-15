@@ -10,7 +10,7 @@ class UsersChats:
             create table if not exists users_chats (
                 id integer primary key auto_increment,
                 id_user integer not null,
-                id_chat integer not null,
+                id_chat char(36) not null,
                 
                 foreign key (id_user) references users(id),
                 foreign key (id_chat) references chats(id)

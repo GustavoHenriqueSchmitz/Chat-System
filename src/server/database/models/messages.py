@@ -28,7 +28,7 @@ class Messages:
             (content, id_sender, id_chat, send_date),
         )
         self.connection.commit()
-    
+
     def find_messages(self):
         self.database.execute(
             """
@@ -50,7 +50,9 @@ class Messages:
             )
         return messages_formatted
 
-    def update_message(self, id, content=None, id_sender=None, id_chat=None, send_date=None):
+    def update_message(
+        self, id, content=None, id_sender=None, id_chat=None, send_date=None
+    ):
         self.database.execute(
             """
         UPDATE messages

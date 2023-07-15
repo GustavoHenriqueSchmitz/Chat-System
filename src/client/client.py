@@ -73,7 +73,7 @@ while True:
 
                 if menu_option[1] == 0:
                     result = Chat.find_chats(client, user_information, "chat")
-                    if result["status"] == True:
+                    if result["status"] == True and result["data"] != []:
                         chats_names = []
                         for chat in result["data"]:
                             chats_names.append(chat["name"])
@@ -92,7 +92,7 @@ while True:
 
                 elif menu_option[1] == 1:
                     result = Chat.find_chats(client, user_information, "group")
-                    if result["status"] == True:
+                    if result["status"] == True and result["data"] != []:
                         chats_names = []
                         for chat in result["data"]:
                             chats_names.append(chat["name"])
