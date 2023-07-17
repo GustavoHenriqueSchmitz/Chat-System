@@ -42,6 +42,9 @@ def handle_client(client_socket):
         elif message["request_type"] == "create_chat":
             ChatController.create_chat(client_socket, database, message)
 
+        elif message["request_type"] == "create_group":
+            ChatController.create_group(client_socket, database, message)
+
         elif message["request_type"] == "close_connection":
             client_socket.close()
             break

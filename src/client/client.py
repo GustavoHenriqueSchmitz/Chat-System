@@ -1,4 +1,5 @@
 import socket
+import time
 from pick import pick as selectMenu
 from auth.auth import Auth
 from user.user import User
@@ -86,6 +87,18 @@ while True:
                                     "=>",
                                     0,
                                 )
+                                chat_index = menu_option[1]
+                                while True:
+                                    try:
+                                        menu_option = selectMenu(
+                                            ["Chat", "Delete Chat", "Rename Chat"],
+                                            f"{chats_names[chat_index]} | ctrl+c to return",
+                                            "=>",
+                                            0,
+                                        )
+                                    except KeyboardInterrupt:
+                                        os.system("cls" if os.name == "nt" else "clear")
+                                        break
                             except KeyboardInterrupt:
                                 os.system("cls" if os.name == "nt" else "clear")
                                 break
@@ -105,6 +118,23 @@ while True:
                                     "=>",
                                     0,
                                 )
+                                group_index = menu_option[1]
+                                while True:
+                                    try:
+                                        menu_option = selectMenu(
+                                            [
+                                                "Chat",
+                                                "Add User",
+                                                "Remove User" "Delete Group",
+                                                "Rename Group",
+                                            ],
+                                            f"{chats_names[group_index]} | ctrl+c to return",
+                                            "=>",
+                                            0,
+                                        )
+                                    except KeyboardInterrupt:
+                                        os.system("cls" if os.name == "nt" else "clear")
+                                        break
                             except KeyboardInterrupt:
                                 os.system("cls" if os.name == "nt" else "clear")
                                 break

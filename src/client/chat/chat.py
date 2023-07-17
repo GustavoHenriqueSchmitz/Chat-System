@@ -71,12 +71,16 @@ class Chat:
     def create_group(client, user_information):
         try:
             print("-------- Create Group --------\n => ctrl+c to cancel...")
-            group_users = []
+            group_users = [user_information["phone_number"]]
             while True:
                 print("-------- Digit exit for finish --------")
                 group_user = str(input("Add User [Phone Number]: ")).strip()
                 if group_user.lower() == "exit":
                     break
+                elif group_user in group_users:
+                    print("------------------------------------------------")
+                    print("This user was already added!")
+                    continue
 
                 try:
                     parse(group_user, None)
@@ -84,7 +88,6 @@ class Chat:
                 except NumberParseException:
                     print("Invalid Phone Number")
                     print("------------------------------------------------")
-                    continue
             group_name = str(input("Group Name: ")).strip()
 
             client.send(

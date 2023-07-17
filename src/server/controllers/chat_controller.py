@@ -83,6 +83,13 @@ class ChatController:
                     user["id"], None
                 )
                 for user_chat_user in users_chats_user:
+                    if (
+                        database["chats"].find_chats(user_chat_user["id_chat"], None)[
+                            "chat_type"
+                        ]
+                        == "group"
+                    ):
+                        continue
                     for user_chat_added_user in users_chats_added_user:
                         if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
                             raise
@@ -102,8 +109,7 @@ class ChatController:
                     database["chats"].create_chat(
                         chat_id, message["data"]["chat_name"], "chat"
                     )
-                except Exception as e:
-                    print(e)
+                except:
                     client_socket.send(
                         json.dumps(
                             {
@@ -116,8 +122,7 @@ class ChatController:
                 else:
                     try:
                         chat = database["chats"].find_chats(chat_id, None)
-                    except Exception as e:
-                        print(e)
+                    except:
                         client_socket.send(
                             json.dumps(
                                 {
@@ -177,6 +182,8 @@ class ChatController:
         try:
             users = []
             for added_user in message["data"]["added_users_phone_number"]:
+                if added_user in users:
+                    continue
                 user = database["users"].find_users(None, added_user)
                 users.append(user)
         except:
@@ -191,18 +198,12 @@ class ChatController:
             )
         else:
             try:
-                chats = database["chats"].find_chats()
-                chat_ids = []
-                for chat in chats:
-                    chat_ids.append(chat["chat_id"])
-                while True:
-                    chat_id = secrets.token_hex(30)
-                    if chat_id not in chat_ids:
-                        break
+                chat_id = str(uuid.uuid4())
                 database["chats"].create_chat(
-                    message["data"]["group_name"], "group", chat_id
+                    chat_id, message["data"]["group_name"], "group"
                 )
-            except:
+            except Exception as e:
+                print(e)
                 client_socket.send(
                     json.dumps(
                         {
@@ -214,7 +215,7 @@ class ChatController:
                 )
             else:
                 try:
-                    chat = database["chats"].find_chats(chat_id=chat_id)
+                    chat = database["chats"].find_chats(chat_id, None)
                 except:
                     client_socket.send(
                         json.dumps(
@@ -227,10 +228,6 @@ class ChatController:
                     )
                 else:
                     try:
-                        database["users_chats"].create_user_chat(
-                            message["data"]["user_id"],
-                            chat["id"],
-                        )
                         for user in users:
                             database["users_chats"].create_user_chat(
                                 user["id"],
