@@ -55,12 +55,15 @@ class UsersChats:
     def update_user_chat(self, id, new_id_user=None, new_id_chat=None):
         self.database.execute(
             """
-        UPDATE messages
-        SET {} {}
+        UPDATE users_chats
+        SET id = {} {} {}
         WHERE id = %s
         """.format(
-                "id_user = '{}'".format(new_id_user) if new_id_user is not None else "",
-                "id_sender = '{}'".format(new_id_chat)
+                id,
+                ",id_user = '{}'".format(new_id_user)
+                if new_id_user is not None
+                else "",
+                ",id_chat = '{}'".format(new_id_chat)
                 if new_id_chat is not None
                 else "",
             ),
@@ -68,11 +71,14 @@ class UsersChats:
         )
         self.connection.commit()
 
-    def delete_user_chat(self, id):
+    def delete_user_chat(self, id=None, id_user=None, id_chat=None):
         self.database.execute(
             """
-            delete from users_chats where id = %s
-            """,
-            (id,),
+            delete from users_chats where 1=1 {} {} {}
+            """.format(
+                "and id = '{}'".format(id) if id is not None else "",
+                "and id_user = '{}'".format(id_user) if id_user is not None else "",
+                "and id_chat = '{}'".format(id_chat) if id_chat is not None else "",
+            ),
         )
         self.connection.commit()

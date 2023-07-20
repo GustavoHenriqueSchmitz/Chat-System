@@ -1,7 +1,4 @@
 class Chats:
-    class ChatNotFoundError(Exception):
-        pass
-
     def __init__(self, connection):
         self.connection = connection
         self.database = connection.cursor()
@@ -45,7 +42,7 @@ class Chats:
 
         if id is not None:
             if chats == []:
-                raise self.ChatNotFoundError("Chat not Found")
+                raise Exception("ChatNotFound")
             else:
                 return {
                     "id": chats[0][0],
@@ -68,11 +65,12 @@ class Chats:
         self.database.execute(
             """
         UPDATE chats
-        SET {} {}
+        SET id = {} {} {}
         WHERE id = %s
         """.format(
-                "name = '{}'".format(new_name) if new_name is not None else "",
-                "chat_type = '{}'".format(new_chat_type)
+                id,
+                ",name = '{}'".format(new_name) if new_name is not None else "",
+                ",chat_type = '{}'".format(new_chat_type)
                 if new_chat_type is not None
                 else "",
             ),

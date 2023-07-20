@@ -23,7 +23,7 @@ class Chat:
             if results["status"] == False:
                 print("------------------------------------------------")
                 print(results["message"])
-                time.sleep(2.5)
+                time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
         except KeyboardInterrupt:
@@ -60,7 +60,7 @@ class Chat:
             results = json.loads(client.recv(1024).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
-            time.sleep(2.5)
+            time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
         except KeyboardInterrupt:
@@ -105,9 +105,53 @@ class Chat:
             results = json.loads(client.recv(1024).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
-            time.sleep(2.5)
+            time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
         except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}
+
+    @staticmethod
+    def delete_chat(client, chat_id, chat_type):
+        print("-------- Delete Chat --------\n")
+        while True:
+            try:
+                confirm_deletion = (
+                    str(input("Do you really want to delete this chat? [Y/N]: "))
+                    .strip()
+                    .lower()
+                )
+                if confirm_deletion != "y" and confirm_deletion != "n":
+                    print("Invalid option, digit [Y/N]")
+                    print("------------------------------------------------")
+                    time.sleep(2)
+                    continue
+                else:
+                    break
+            except KeyboardInterrupt:
+                os.system("cls" if os.name == "nt" else "clear")
+                return {"message": None, "data": None, "status": False}
+
+        if confirm_deletion == "y":
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "delete_chat",
+                        "data": {
+                            "chat_id": chat_id,
+                            "chat_type": chat_type,
+                        },
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(1024).decode("utf-8"))
+            print("------------------------------------------------")
+            print(results["message"])
+            time.sleep(2.2)
+            os.system("cls" if os.name == "nt" else "clear")
+            return results
+
+        else:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}

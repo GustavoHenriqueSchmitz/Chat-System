@@ -31,7 +31,7 @@ class Auth:
             results = json.loads(client.recv(1024).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
-            time.sleep(2.5)
+            time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
         except KeyboardInterrupt:
@@ -67,7 +67,7 @@ class Auth:
             results = json.loads(client.recv(1024).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
-            time.sleep(2.5)
+            time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
         except KeyboardInterrupt:

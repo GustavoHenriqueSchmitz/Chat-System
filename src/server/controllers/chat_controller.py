@@ -1,5 +1,4 @@
 import json
-import secrets
 import uuid
 import mysql.connector
 from mysql.connector import errorcode
@@ -20,8 +19,11 @@ class ChatController:
                     )
                     if chat not in chats:
                         chats.append(chat)
-                except database["chats"].ChatNotFoundError:
-                    pass
+                except Exception as error:
+                    if str(error) == "ChatNotFound":
+                        pass
+                    else:
+                        raise
         except:
             client_socket.send(
                 json.dumps(
@@ -267,3 +269,45 @@ class ChatController:
                             ).encode("utf-8")
                         )
                         return
+
+    @staticmethod
+    def delete_chat(client_socket, database, message):
+        try:
+            database["users_chats"].delete_user_chat(
+                None, None, message["data"]["chat_id"]
+            )
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "There was an error while trying to delete your chat, try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+        else:
+            try:
+                database["chats"].delete_chat(message["data"]["chat_id"])
+            except:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "There was an error while trying to delete your chat, try again or later.",
+                            "data": None,
+                            "status": False,
+                        }
+                    ).encode("utf-8")
+                )
+            else:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "Chat deleted with success!"
+                            if message["data"]["chat_type"] == "chat"
+                            else "Group deleted with success!",
+                            "data": None,
+                            "status": True,
+                        }
+                    ).encode("utf-8")
+                )

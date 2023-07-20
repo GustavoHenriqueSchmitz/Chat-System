@@ -28,7 +28,7 @@ class User:
         results = json.loads(client.recv(1024).decode("utf-8"))
         print("------------------------------------------------")
         print(results["message"])
-        time.sleep(2.5)
+        time.sleep(2.2)
         os.system("cls" if os.name == "nt" else "clear")
         return results
 
@@ -55,7 +55,7 @@ class User:
         results = json.loads(client.recv(1024).decode("utf-8"))
         print("------------------------------------------------")
         print(results["message"])
-        time.sleep(2.5)
+        time.sleep(2.2)
         os.system("cls" if os.name == "nt" else "clear")
         return results
 
@@ -85,7 +85,7 @@ class User:
                     results = json.loads(client.recv(1024).decode("utf-8"))
                     print("------------------------------------------------")
                     print(results["message"])
-                    time.sleep(2.5)
+                    time.sleep(2.2)
                     os.system("cls" if os.name == "nt" else "clear")
                     return results
                 else:
@@ -99,7 +99,7 @@ class User:
 
     @staticmethod
     def delete_user(client, user_information):
-        print("-------- Delete User --------\n => ctrl+c to cancel...")
+        print("-------- Delete User --------\n")
         while True:
             try:
                 confirm_deletion = (
@@ -109,6 +109,7 @@ class User:
                 )
                 if confirm_deletion != "y" and confirm_deletion != "n":
                     print("Invalid option, digit [Y/N]")
+                    print("------------------------------------------------")
                     time.sleep(2)
                     continue
                 else:
@@ -129,7 +130,7 @@ class User:
             results = json.loads(client.recv(1024).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
-            time.sleep(2.5)
+            time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
 

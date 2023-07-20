@@ -1,5 +1,4 @@
 import socket
-import time
 from pick import pick as selectMenu
 from auth.auth import Auth
 from user.user import User
@@ -81,12 +80,15 @@ while True:
 
                         while True:
                             try:
-                                menu_option = selectMenu(
-                                    chats_names,
-                                    "Chats | ctrl+c to return",
-                                    "=>",
-                                    0,
-                                )
+                                try:
+                                    menu_option = selectMenu(
+                                        chats_names,
+                                        "Chats | ctrl+c to return",
+                                        "=>",
+                                        0,
+                                    )
+                                except ValueError:
+                                    break
                                 chat_index = menu_option[1]
                                 while True:
                                     try:
@@ -96,6 +98,19 @@ while True:
                                             "=>",
                                             0,
                                         )
+                                        if menu_option[1] == 0:
+                                            pass
+                                        elif menu_option[1] == 1:
+                                            results = Chat.delete_chat(
+                                                client,
+                                                result["data"][chat_index]["id"],
+                                                result["data"][chat_index]["chat_type"],
+                                            )
+                                            if results["status"] == True:
+                                                del chats_names[chat_index]
+                                                break
+                                        elif menu_option[1] == 2:
+                                            pass
                                     except KeyboardInterrupt:
                                         os.system("cls" if os.name == "nt" else "clear")
                                         break
@@ -106,18 +121,21 @@ while True:
                 elif menu_option[1] == 1:
                     result = Chat.find_chats(client, user_information, "group")
                     if result["status"] == True and result["data"] != []:
-                        chats_names = []
+                        groups_names = []
                         for chat in result["data"]:
-                            chats_names.append(chat["name"])
+                            groups_names.append(chat["name"])
 
                         while True:
                             try:
-                                menu_option = selectMenu(
-                                    chats_names,
-                                    "Groups | ctrl+c to return",
-                                    "=>",
-                                    0,
-                                )
+                                try:
+                                    menu_option = selectMenu(
+                                        groups_names,
+                                        "Groups | ctrl+c to return",
+                                        "=>",
+                                        0,
+                                    )
+                                except ValueError:
+                                    break
                                 group_index = menu_option[1]
                                 while True:
                                     try:
@@ -125,13 +143,33 @@ while True:
                                             [
                                                 "Chat",
                                                 "Add User",
-                                                "Remove User" "Delete Group",
+                                                "Remove User",
+                                                "Delete Group",
                                                 "Rename Group",
                                             ],
-                                            f"{chats_names[group_index]} | ctrl+c to return",
+                                            f"{groups_names[group_index]} | ctrl+c to return",
                                             "=>",
                                             0,
                                         )
+                                        if menu_option[1] == 0:
+                                            pass
+                                        elif menu_option[1] == 1:
+                                            pass
+                                        elif menu_option[1] == 2:
+                                            pass
+                                        elif menu_option[1] == 3:
+                                            results = Chat.delete_chat(
+                                                client,
+                                                result["data"][group_index]["id"],
+                                                result["data"][group_index][
+                                                    "chat_type"
+                                                ],
+                                            )
+                                            if results["status"] == True:
+                                                del groups_names[group_index]
+                                                break
+                                        elif menu_option[1] == 4:
+                                            pass
                                     except KeyboardInterrupt:
                                         os.system("cls" if os.name == "nt" else "clear")
                                         break
@@ -158,7 +196,7 @@ while True:
                                     "Change Password",
                                     "Delete User",
                                 ],
-                                "Chat Settings",
+                                "Chat Settings | ctrl+c to return",
                                 "=>",
                                 0,
                             )
