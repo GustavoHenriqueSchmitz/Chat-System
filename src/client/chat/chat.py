@@ -155,3 +155,31 @@ class Chat:
         else:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
+
+    @staticmethod
+    def rename_chat(client, chat_id, chat_type):
+        print("-------- Rename Chat --------\n")
+        try:
+            new_chat_name = str(input("New chat name: ")).strip()
+        except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}
+
+        client.send(
+            json.dumps(
+                {
+                    "request_type": "rename_chat",
+                    "data": {
+                        "chat_id": chat_id,
+                        "chat_type": chat_type,
+                        "new_chat_name": new_chat_name,
+                    },
+                }
+            ).encode("utf-8")
+        )
+        results = json.loads(client.recv(1024).decode("utf-8"))
+        print("------------------------------------------------")
+        print(results["message"])
+        time.sleep(2.2)
+        os.system("cls" if os.name == "nt" else "clear")
+        return results

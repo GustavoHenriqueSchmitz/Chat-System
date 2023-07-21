@@ -65,10 +65,10 @@ class Chats:
         self.database.execute(
             """
         UPDATE chats
-        SET id = {} {} {}
-        WHERE id = %s
+        SET {} {} {}
+        WHERE id = %s 
         """.format(
-                id,
+                "id = '{}'".format(id),
                 ",name = '{}'".format(new_name) if new_name is not None else "",
                 ",chat_type = '{}'".format(new_chat_type)
                 if new_chat_type is not None

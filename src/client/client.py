@@ -72,10 +72,10 @@ while True:
                     exit()
 
                 if menu_option[1] == 0:
-                    result = Chat.find_chats(client, user_information, "chat")
-                    if result["status"] == True and result["data"] != []:
+                    chats_results = Chat.find_chats(client, user_information, "chat")
+                    if chats_results["status"] == True and chats_results["data"] != []:
                         chats_names = []
-                        for chat in result["data"]:
+                        for chat in chats_results["data"]:
                             chats_names.append(chat["name"])
 
                         while True:
@@ -101,16 +101,29 @@ while True:
                                         if menu_option[1] == 0:
                                             pass
                                         elif menu_option[1] == 1:
-                                            results = Chat.delete_chat(
+                                            delete_chat_results = Chat.delete_chat(
                                                 client,
-                                                result["data"][chat_index]["id"],
-                                                result["data"][chat_index]["chat_type"],
+                                                chats_results["data"][chat_index]["id"],
+                                                chats_results["data"][chat_index][
+                                                    "chat_type"
+                                                ],
                                             )
-                                            if results["status"] == True:
+                                            if delete_chat_results["status"] == True:
                                                 del chats_names[chat_index]
                                                 break
                                         elif menu_option[1] == 2:
-                                            pass
+                                            rename_chat_results = Chat.rename_chat(
+                                                client,
+                                                chats_results["data"][chat_index]["id"],
+                                                chats_results["data"][chat_index][
+                                                    "chat_type"
+                                                ],
+                                            )
+                                            if rename_chat_results["status"] == True:
+                                                chats_names[chat_index] = rename_chat_results[
+                                                    "data"
+                                                ]["new_chat_name"]
+
                                     except KeyboardInterrupt:
                                         os.system("cls" if os.name == "nt" else "clear")
                                         break
@@ -119,10 +132,10 @@ while True:
                                 break
 
                 elif menu_option[1] == 1:
-                    result = Chat.find_chats(client, user_information, "group")
-                    if result["status"] == True and result["data"] != []:
+                    groups_results = Chat.find_chats(client, user_information, "group")
+                    if groups_results["status"] == True and groups_results["data"] != []:
                         groups_names = []
-                        for chat in result["data"]:
+                        for chat in groups_results["data"]:
                             groups_names.append(chat["name"])
 
                         while True:
@@ -158,14 +171,14 @@ while True:
                                         elif menu_option[1] == 2:
                                             pass
                                         elif menu_option[1] == 3:
-                                            results = Chat.delete_chat(
+                                            delete_group_results = Chat.delete_chat(
                                                 client,
-                                                result["data"][group_index]["id"],
-                                                result["data"][group_index][
+                                                groups_results["data"][group_index]["id"],
+                                                groups_results["data"][group_index][
                                                     "chat_type"
                                                 ],
                                             )
-                                            if results["status"] == True:
+                                            if delete_group_results["status"] == True:
                                                 del groups_names[group_index]
                                                 break
                                         elif menu_option[1] == 4:
@@ -204,26 +217,26 @@ while True:
                             break
 
                         if menu_option[1] == 0:
-                            result = User.change_name(client, user_information)
+                            change_user_name_results = User.change_name(client, user_information)
 
-                            if result["status"] == True:
-                                login_results["data"]["name"] = result["data"]
+                            if change_user_name_results["status"] == True:
+                                login_results["data"]["name"] = change_user_name_results["data"]
 
                         elif menu_option[1] == 1:
-                            result = User.change_phone_number(client, user_information)
+                            change_phone_number_results = User.change_phone_number(client, user_information)
 
-                            if result["status"] == True:
-                                login_results["data"]["phone_number"] = result["data"]
+                            if change_phone_number_results["status"] == True:
+                                login_results["data"]["phone_number"] = change_phone_number_results["data"]
 
                         elif menu_option[1] == 2:
-                            result = User.change_password(client, user_information)
+                            change_password_results = User.change_password(client, user_information)
 
-                            if result["status"] == True:
-                                login_results["data"]["password"] = result["data"]
+                            if change_password_results["status"] == True:
+                                login_results["data"]["password"] = change_password_results["data"]
 
                         elif menu_option[1] == 3:
-                            result = User.delete_user(client, user_information)
-                            if result["status"] == True:
+                            delete_user_results = User.delete_user(client, user_information)
+                            if delete_user_results["status"] == True:
                                 loops_breaker += 2
                             continue
 

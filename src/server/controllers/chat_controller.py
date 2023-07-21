@@ -311,3 +311,32 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+
+    @staticmethod
+    def rename_chat(client_socket, database, message):
+        try:
+            database["chats"].update_chat(
+                message["data"]["chat_id"], message["data"]["new_chat_name"], None
+            )
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "There was an error while trying to rename your chat, try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+        else:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "Chat renamed with success!"
+                        if message["data"]["chat_type"] == "chat"
+                        else "Group renamed with success!",
+                        "data": {"new_chat_name": message["data"]["new_chat_name"]},
+                        "status": True,
+                    }
+                ).encode("utf-8")
+            )
