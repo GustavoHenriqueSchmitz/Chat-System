@@ -69,7 +69,7 @@ class User:
             return {"message": None, "data": None, "status": False}
         while True:
             try:
-                new_password_confirmation = str(input("Confirm you new password: "))
+                new_password_confirmation = str(input("Confirm your new password: "))
                 if new_password == new_password_confirmation:
                     client.send(
                         json.dumps(

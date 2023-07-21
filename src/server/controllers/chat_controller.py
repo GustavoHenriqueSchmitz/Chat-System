@@ -6,7 +6,7 @@ from mysql.connector import errorcode
 
 class ChatController:
     @staticmethod
-    def find_chats(client_socket, database, message):
+    def find_chats_groups(client_socket, database, message):
         try:
             users_chats = database["users_chats"].find_users_chats(
                 message["data"]["user_id"], None
@@ -15,7 +15,7 @@ class ChatController:
             for user_chat in users_chats:
                 try:
                     chat = database["chats"].find_chats(
-                        user_chat["id_chat"], message["data"]["chat_type"]
+                        user_chat["id_chat"], message["data"]["type"]
                     )
                     if chat not in chats:
                         chats.append(chat)
@@ -28,7 +28,7 @@ class ChatController:
             client_socket.send(
                 json.dumps(
                     {
-                        "message": "There was a problem while finding your chats, try again or later.",
+                        "message": f"There was a problem while finding your {'chats' if message['data']['type'] == 'chat' else 'groups'}, try again or later.",
                         "data": None,
                         "status": False,
                     }
@@ -39,9 +39,7 @@ class ChatController:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": "Chats found with success"
-                            if message["data"]["chat_type"] == "chat"
-                            else "Groups found with success",
+                            "message": f"{'Chats' if message['data']['type'] == 'chat' else 'Groups'} found with success",
                             "data": chats,
                             "status": True,
                         }
@@ -51,9 +49,7 @@ class ChatController:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": "No chats found"
-                            if message["data"]["chat_type"] == "chat"
-                            else "No groups found",
+                            "message": f"No {'chats' if message['data']['type'] == 'chat' else 'groups'} found",
                             "data": chats,
                             "status": False,
                         }
@@ -84,6 +80,7 @@ class ChatController:
                 users_chats_added_user = database["users_chats"].find_users_chats(
                     user["id"], None
                 )
+                counter = 0
                 for user_chat_user in users_chats_user:
                     if (
                         database["chats"].find_chats(user_chat_user["id_chat"], None)[
@@ -92,9 +89,16 @@ class ChatController:
                         == "group"
                     ):
                         continue
-                    for user_chat_added_user in users_chats_added_user:
-                        if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
-                            raise
+                    else:
+                        # ! Corrigir
+                        for user_chat_added_user in users_chats_added_user:
+                            if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
+                                if user_chat_user["id_user"] != users_chats_added_user["id_user"]:
+                                    raise
+                                else:
+                                    counter += 1
+                                    if counter >= 2:
+                                        raise
             except:
                 client_socket.send(
                     json.dumps(
@@ -204,8 +208,7 @@ class ChatController:
                 database["chats"].create_chat(
                     chat_id, message["data"]["group_name"], "group"
                 )
-            except Exception as e:
-                print(e)
+            except:
                 client_socket.send(
                     json.dumps(
                         {
@@ -271,16 +274,16 @@ class ChatController:
                         return
 
     @staticmethod
-    def delete_chat(client_socket, database, message):
+    def delete_chat_group(client_socket, database, message):
         try:
             database["users_chats"].delete_user_chat(
-                None, None, message["data"]["chat_id"]
+                None, None, message["data"]["id"]
             )
         except:
             client_socket.send(
                 json.dumps(
                     {
-                        "message": "There was an error while trying to delete your chat, try again or later.",
+                        "message": f"There was an error while trying to delete your {'chat' if message['data']['type'] == 'chat' else 'group'}, try again or later.",
                         "data": None,
                         "status": False,
                     }
@@ -288,12 +291,12 @@ class ChatController:
             )
         else:
             try:
-                database["chats"].delete_chat(message["data"]["chat_id"])
+                database["chats"].delete_chat(message["data"]["id"])
             except:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": "There was an error while trying to delete your chat, try again or later.",
+                            "message": f"There was an error while trying to delete your {'chat' if message['data']['type'] == 'chat' else 'group'}, try again or later.",
                             "data": None,
                             "status": False,
                         }
@@ -303,9 +306,7 @@ class ChatController:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": "Chat deleted with success!"
-                            if message["data"]["chat_type"] == "chat"
-                            else "Group deleted with success!",
+                            "message": f"{'Chat' if message['data']['type'] == 'chat' else 'Group'} deleted with success!",
                             "data": None,
                             "status": True,
                         }
@@ -313,16 +314,16 @@ class ChatController:
                 )
 
     @staticmethod
-    def rename_chat(client_socket, database, message):
+    def rename_chat_group(client_socket, database, message):
         try:
             database["chats"].update_chat(
-                message["data"]["chat_id"], message["data"]["new_chat_name"], None
+                message["data"]["id"], message["data"]["new_name"], None
             )
         except:
             client_socket.send(
                 json.dumps(
                     {
-                        "message": "There was an error while trying to rename your chat, try again or later.",
+                        "message": f"There was an error while trying to rename your {'chat' if message['data']['type'] == 'chat' else 'group'}, try again or later.",
                         "data": None,
                         "status": False,
                     }
@@ -332,10 +333,8 @@ class ChatController:
             client_socket.send(
                 json.dumps(
                     {
-                        "message": "Chat renamed with success!"
-                        if message["data"]["chat_type"] == "chat"
-                        else "Group renamed with success!",
-                        "data": {"new_chat_name": message["data"]["new_chat_name"]},
+                        "message": f"{'Chat' if message['data']['type'] == 'chat' else 'Group'} renamed with success!",
+                        "data": {"new_name": message["data"]["new_name"]},
                         "status": True,
                     }
                 ).encode("utf-8")

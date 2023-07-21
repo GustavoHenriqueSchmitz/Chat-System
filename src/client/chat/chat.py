@@ -6,15 +6,15 @@ from phonenumbers import parse, NumberParseException
 
 class Chat:
     @staticmethod
-    def find_chats(client, user_information, chat_type):
+    def find_chats_groups(client, user_information, type):
         try:
             client.send(
                 json.dumps(
                     {
-                        "request_type": "find_chats",
+                        "request_type": "find_chats_groups",
                         "data": {
                             "user_id": user_information["id"],
-                            "chat_type": chat_type,
+                            "type": type,
                         },
                     }
                 ).encode("utf-8")
@@ -113,12 +113,12 @@ class Chat:
             return {"message": None, "data": None, "status": False}
 
     @staticmethod
-    def delete_chat(client, chat_id, chat_type):
-        print("-------- Delete Chat --------\n")
+    def delete_chat_group(client, id, type):
+        print(f"-------- Delete {'Chat' if type == 'chat' else 'Group'} --------\n")
         while True:
             try:
                 confirm_deletion = (
-                    str(input("Do you really want to delete this chat? [Y/N]: "))
+                    str(input(f"Do you really want to delete this {'chat' if type == 'chat' else 'group'}? [Y/N]: "))
                     .strip()
                     .lower()
                 )
@@ -137,10 +137,10 @@ class Chat:
             client.send(
                 json.dumps(
                     {
-                        "request_type": "delete_chat",
+                        "request_type": "delete_chat_group",
                         "data": {
-                            "chat_id": chat_id,
-                            "chat_type": chat_type,
+                            "id": id,
+                            "type": type,
                         },
                     }
                 ).encode("utf-8")
@@ -157,10 +157,10 @@ class Chat:
             return {"message": None, "data": None, "status": False}
 
     @staticmethod
-    def rename_chat(client, chat_id, chat_type):
-        print("-------- Rename Chat --------\n")
+    def rename_chat_group(client, id, type):
+        print(f"-------- Rename {'Chat' if type == 'chat' else 'Group'} --------\n")
         try:
-            new_chat_name = str(input("New chat name: ")).strip()
+            new_name = str(input(f"New {'chat' if type == 'chat' else 'group'} name: ")).strip()
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
@@ -168,11 +168,11 @@ class Chat:
         client.send(
             json.dumps(
                 {
-                    "request_type": "rename_chat",
+                    "request_type": "rename_chat_group",
                     "data": {
-                        "chat_id": chat_id,
-                        "chat_type": chat_type,
-                        "new_chat_name": new_chat_name,
+                        "id": id,
+                        "type": type,
+                        "new_name": new_name,
                     },
                 }
             ).encode("utf-8")

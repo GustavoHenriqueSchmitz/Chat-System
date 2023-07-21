@@ -36,8 +36,8 @@ def handle_client(client_socket):
         elif message["request_type"] == "delete_user":
             UserController.delete_user(client_socket, database, message)
 
-        elif message["request_type"] == "find_chats":
-            ChatController.find_chats(client_socket, database, message)
+        elif message["request_type"] == "find_chats_groups":
+            ChatController.find_chats_groups(client_socket, database, message)
 
         elif message["request_type"] == "create_chat":
             ChatController.create_chat(client_socket, database, message)
@@ -45,11 +45,11 @@ def handle_client(client_socket):
         elif message["request_type"] == "create_group":
             ChatController.create_group(client_socket, database, message)
 
-        elif message["request_type"] == "rename_chat":
-            ChatController.rename_chat(client_socket, database, message)
+        elif message["request_type"] == "rename_chat_group":
+            ChatController.rename_chat_group(client_socket, database, message)
 
-        elif message["request_type"] == "delete_chat":
-            ChatController.delete_chat(client_socket, database, message)
+        elif message["request_type"] == "delete_chat_group":
+            ChatController.delete_chat_group(client_socket, database, message)
 
         elif message["request_type"] == "close_connection":
             client_socket.close()

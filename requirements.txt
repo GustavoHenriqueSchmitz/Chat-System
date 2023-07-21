@@ -1,2 +1,3 @@
 pick
 phonenumbers
+mysql-connector-python
