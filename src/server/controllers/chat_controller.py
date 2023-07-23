@@ -80,8 +80,8 @@ class ChatController:
                 users_chats_added_user = database["users_chats"].find_users_chats(
                     user["id"], None
                 )
-                counter = 0
                 for user_chat_user in users_chats_user:
+                    counter = 0
                     if (
                         database["chats"].find_chats(user_chat_user["id_chat"], None)[
                             "chat_type"
@@ -90,15 +90,22 @@ class ChatController:
                     ):
                         continue
                     else:
-                        # ! Corrigir
                         for user_chat_added_user in users_chats_added_user:
-                            if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
-                                if user_chat_user["id_user"] != users_chats_added_user["id_user"]:
-                                    raise
-                                else:
-                                    counter += 1
-                                    if counter >= 2:
+                            if (
+                                database["chats"].find_chats(user_chat_user["id_chat"], None)[
+                                    "chat_type"
+                                ]
+                                == "group"
+                            ):
+                                continue
+                            else:
+                                if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
+                                    if user_chat_user["id_user"] != user_chat_added_user["id_user"]:
                                         raise
+                                    else:
+                                        counter += 1
+                                        if counter >= 2:
+                                            raise
             except:
                 client_socket.send(
                     json.dumps(
