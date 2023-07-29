@@ -25,7 +25,7 @@ class User:
                 }
             ).encode("utf-8")
         )
-        results = json.loads(client.recv(1024).decode("utf-8"))
+        results = json.loads(client.recv(100000).decode("utf-8"))
         print("------------------------------------------------")
         print(results["message"])
         time.sleep(2.2)
@@ -52,7 +52,7 @@ class User:
                 }
             ).encode("utf-8")
         )
-        results = json.loads(client.recv(1024).decode("utf-8"))
+        results = json.loads(client.recv(100000).decode("utf-8"))
         print("------------------------------------------------")
         print(results["message"])
         time.sleep(2.2)
@@ -82,7 +82,7 @@ class User:
                             }
                         ).encode("utf-8")
                     )
-                    results = json.loads(client.recv(1024).decode("utf-8"))
+                    results = json.loads(client.recv(100000).decode("utf-8"))
                     print("------------------------------------------------")
                     print(results["message"])
                     time.sleep(2.2)
@@ -127,7 +127,7 @@ class User:
                     }
                 ).encode("utf-8")
             )
-            results = json.loads(client.recv(1024).decode("utf-8"))
+            results = json.loads(client.recv(100000).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
             time.sleep(2.2)

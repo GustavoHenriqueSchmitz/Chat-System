@@ -19,7 +19,7 @@ class Chat:
                     }
                 ).encode("utf-8")
             )
-            results = json.loads(client.recv(1024).decode("utf-8"))
+            results = json.loads(client.recv(100000).decode("utf-8"))
             if results["status"] == False:
                 print("------------------------------------------------")
                 print(results["message"])
@@ -57,7 +57,7 @@ class Chat:
                     }
                 ).encode("utf-8")
             )
-            results = json.loads(client.recv(1024).decode("utf-8"))
+            results = json.loads(client.recv(100000).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
             time.sleep(2.2)
@@ -102,7 +102,7 @@ class Chat:
                     }
                 ).encode("utf-8")
             )
-            results = json.loads(client.recv(1024).decode("utf-8"))
+            results = json.loads(client.recv(100000).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
             time.sleep(2.2)
@@ -145,7 +145,7 @@ class Chat:
                     }
                 ).encode("utf-8")
             )
-            results = json.loads(client.recv(1024).decode("utf-8"))
+            results = json.loads(client.recv(100000).decode("utf-8"))
             print("------------------------------------------------")
             print(results["message"])
             time.sleep(2.2)
@@ -177,9 +177,66 @@ class Chat:
                 }
             ).encode("utf-8")
         )
-        results = json.loads(client.recv(1024).decode("utf-8"))
+        results = json.loads(client.recv(100000).decode("utf-8"))
         print("------------------------------------------------")
         print(results["message"])
         time.sleep(2.2)
         os.system("cls" if os.name == "nt" else "clear")
         return results
+    
+    @staticmethod
+    def group_add_user(client, group_id):
+        try:
+            print("-------- Add User --------\n => ctrl+c to cancel...")
+            while True:
+                added_user = str(input("User [Phone Number]: "))
+                try:
+                    parse(added_user, None)
+                    break
+                except NumberParseException:
+                    print("Invalid Phone Number!")
+                    print("------------------------------------------------")
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "group_add_user",
+                        "data": {
+                            "added_user": added_user,
+                            "group_id": group_id,
+                        },
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(100000).decode("utf-8"))
+            print("------------------------------------------------")
+            print(results["message"])
+            time.sleep(2.2)
+            os.system("cls" if os.name == "nt" else "clear")
+            return results
+        except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}
+    
+    @staticmethod
+    def group_remove_user(client, group_id):
+        try:
+            print("-------- Remove User --------\n => ctrl+c to cancel...")
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "group_add_user",
+                        "data": {
+                            "group_id": group_id,
+                        },
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(100000).decode("utf-8"))
+            print("------------------------------------------------")
+            print(results["message"])
+            time.sleep(2.2)
+            os.system("cls" if os.name == "nt" else "clear")
+            return results
+        except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}

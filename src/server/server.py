@@ -44,6 +44,9 @@ def handle_client(client_socket):
 
         elif message["request_type"] == "create_group":
             ChatController.create_group(client_socket, database, message)
+        
+        elif message["request_type"] == "group_add_user":
+            ChatController.group_add_user(client_socket, database, message)
 
         elif message["request_type"] == "rename_chat_group":
             ChatController.rename_chat_group(client_socket, database, message)

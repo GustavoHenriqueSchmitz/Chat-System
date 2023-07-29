@@ -1,4 +1,5 @@
 import socket
+import time
 from pick import pick as selectMenu
 from auth.auth import Auth
 from user.user import User
@@ -110,6 +111,7 @@ while True:
                                             )
                                             if delete_chat_results["status"] == True:
                                                 del chats_names[chat_index]
+                                                del chats_results["data"][chat_index]
                                                 break
                                         elif menu_option[1] == 2:
                                             rename_chat_results = Chat.rename_chat_group(
@@ -121,6 +123,9 @@ while True:
                                             )
                                             if rename_chat_results["status"] == True:
                                                 chats_names[chat_index] = rename_chat_results[
+                                                    "data"
+                                                ]["new_name"]
+                                                chats_results["data"][chat_index]["name"] = rename_chat_results[
                                                     "data"
                                                 ]["new_name"]
 
@@ -165,9 +170,15 @@ while True:
                                             0,
                                         )
                                         if menu_option[1] == 0:
-                                            pass
+                                            remove_user_results = Chat.group_remove_user(
+                                                client,
+                                                groups_results["data"][group_index]["id"],
+                                            )
                                         elif menu_option[1] == 1:
-                                            pass
+                                            add_user_results = Chat.group_add_user(
+                                                client,
+                                                groups_results["data"][group_index]["id"],
+                                            )
                                         elif menu_option[1] == 2:
                                             pass
                                         elif menu_option[1] == 3:
@@ -180,6 +191,7 @@ while True:
                                             )
                                             if delete_group_results["status"] == True:
                                                 del groups_names[group_index]
+                                                del groups_results["data"][group_index]
                                                 break
                                         elif menu_option[1] == 4:
                                             rename_group_results = Chat.rename_chat_group(
@@ -191,6 +203,9 @@ while True:
                                             )
                                             if rename_group_results["status"] == True:
                                                 groups_names[group_index] = rename_group_results[
+                                                    "data"
+                                                ]["new_name"]
+                                                groups_results["data"][group_index]["name"] = rename_group_results[
                                                     "data"
                                                 ]["new_name"]
                                     except KeyboardInterrupt:

@@ -1,3 +1,4 @@
+
 class UsersChats:
     def __init__(self, connection):
         self.connection = connection
@@ -28,29 +29,76 @@ class UsersChats:
         )
         self.connection.commit()
 
-    def find_users_chats(self, id_user=None, id_chat=None):
+    def find_users_chats(self, config):
+        """
+        This function allows to search for data of the relation table users_chats
+        Having the following config parameter:
+
+        :-> where: To filter the data that you want to get.
+        :-> join: To join the relationed tables. Define the following dictionaries, according the tables that you want to add.
+        :-> attributes: Define the columns that you want to get data from.
+
+        {
+            "where": {
+                "id_user": int,
+                "id_chat": str
+            },
+            "join": {
+                "users": {
+                    "join_type": ["inner", "left", "right"],
+                    "on_condition": {"id_user": str}
+                },
+                "chats": {
+                    "join_type": ["inner", "left", "right"],
+                    "on_condition": {"id_chat": str}
+                }
+            },
+            "attributes": {
+                id: bool,
+                id_chat: bool,
+                id_user: bool
+            }
+        }
+
+        Deactivating parameters or options:
+        If you don't want to use some option or parameter you can attribute None value to this.
+        You can pass None value directly to the parameter to ignore it. Or if you want to use a parameter, but don't want
+        use one or more of your options, you can pass None value to the option you want to ignore.
+        Except for the attribute parameter options, which are boolean values.
+        """
+
+        attributes = ""
+        for counter, attribute, activated in enumerate(config.get("attributes", {}).items()):
+            if activated:
+                if len(config["attributes"]) > 1 and counter+1 < len(config["attributes"]):
+                    attributes = attributes + f"{attribute},"
+                else:
+                    attributes = attributes + attribute
+
         self.database.execute(
             """
-            select id, id_user, id_chat from users_chats
+            select {} from users_chats
+            {} join users {}
+            {} join chats {}
             where 1=1 {} {}
         """.format(
-                "and id_user = '{}'".format(id_user) if id_user is not None else "",
-                "and id_chat = '{}'".format(id_chat) if id_chat is not None else "",
+                attributes if config.get("attributes", {}) else "*",
+                config["join"]["users"]["join_type"] if config.get("join", {}).get("users", {}).get("join_type", "") else "",
+                f'on id_user = {config["join"]["users"]["on_condition"]}' if config.get("join", {}).get("users", {}).get("on_condition", "") else "",
+                config["join"]["chats"]["join_type"] if config.get("join", {}).get("chats", {}).get("join_type", "") else "",
+                f'on id_chat = {config["join"]["chats"]["on_condition"]}' if config.get("join", {}).get("chats", {}).get("on_condition", "") else "",
+                "and id_user = '{}'".format(config["where"]["id_user"]) if config.get("where", {}).get("id_user", 0) else "",
+                "and id_chat = '{}'".format(config["where"]["id_chat"]) if config.get("where", {}).get("id_chat", "") else "",
             ),
         )
-        users_chats = self.database.fetchall()
+
+        columns = [column[0] for column in self.database.description]
+        results = []
+        for row in self.database.fetchall():
+            results.append(dict(zip(columns, row)))
         self.connection.commit()
 
-        users_chats_formatted = []
-        for user_chat in users_chats:
-            users_chats_formatted.append(
-                {
-                    "id": user_chat[0],
-                    "id_user": user_chat[1],
-                    "id_chat": user_chat[2],
-                }
-            )
-        return users_chats_formatted
+        return results
 
     def update_user_chat(self, id, new_id_user=None, new_id_chat=None):
         self.database.execute(

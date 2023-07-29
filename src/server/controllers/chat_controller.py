@@ -8,22 +8,21 @@ class ChatController:
     @staticmethod
     def find_chats_groups(client_socket, database, message):
         try:
-            users_chats = database["users_chats"].find_users_chats(
-                message["data"]["user_id"], None
-            )
-            chats = []
-            for user_chat in users_chats:
-                try:
-                    chat = database["chats"].find_chats(
-                        user_chat["id_chat"], message["data"]["type"]
-                    )
-                    if chat not in chats:
-                        chats.append(chat)
-                except Exception as error:
-                    if str(error) == "ChatNotFound":
-                        pass
-                    else:
-                        raise
+            users_chats_results = database["users_chats"].find_users_chats({
+                "where": {
+                    "id_user": message["data"]["user_id"]
+                },
+                "join": {
+                    "chats": {
+                        "join_type": "right",
+                        "on_condition": "chats.id"
+                    },
+                    "users": {
+                        "join_type": "left",
+                        "on_condition": "users.id"
+                    }
+                }
+            })
         except:
             client_socket.send(
                 json.dumps(
@@ -35,6 +34,10 @@ class ChatController:
                 ).encode("utf-8")
             )
         else:
+            chats = []
+            for chat in users_chats_results:
+                if chat["chat_type"] == message['data']['type'] and chat not in chats:
+                    chats.append(chat)
             if chats != []:
                 client_socket.send(
                     json.dumps(
@@ -346,3 +349,58 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+
+    def group_add_user(client_socket, database, message):
+        try:
+            user = database["users"].find_users(
+                None, message["data"]["added_user"]
+            )
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "The added user not exists.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+        else:
+            try:
+                group_users_chats = database["users_chats"].find_users_chats(None, message["data"]["group_id"])
+                for group_user_chat in group_users_chats:
+                    if group_user_chat["id_user"] == user["id"]:
+                        raise
+            except:
+                client_socket.send(
+                    json.dumps(
+                        {
+                            "message": "This user is already added.",
+                            "data": None,
+                            "status": False,
+                        }
+                    ).encode("utf-8")
+                )
+            else:
+                try:
+                    database["users_chats"].create_user_chat(user["id"], message["data"]["group_id"])
+                except:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "Error trying to add user, please try again or later.",
+                                "data": None,
+                                "status": False,
+                            }
+                        ).encode("utf-8")
+                    )
+                else:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": "User added with success.",
+                                "data": None,
+                                "status": True,
+                            }
+                        ).encode("utf-8")
+                    )
