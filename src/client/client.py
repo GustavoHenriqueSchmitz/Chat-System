@@ -73,7 +73,9 @@ while True:
                     exit()
 
                 if menu_option[1] == 0:
-                    chats_results = Chat.find_chats_groups(client, user_information, "chat")
+                    chats_results = Chat.find_chats_groups(
+                        client, user_information, "chat"
+                    )
                     if chats_results["status"] == True and chats_results["data"] != []:
                         chats_names = []
                         for chat in chats_results["data"]:
@@ -102,32 +104,44 @@ while True:
                                         if menu_option[1] == 0:
                                             pass
                                         elif menu_option[1] == 1:
-                                            delete_chat_results = Chat.delete_chat_group(
-                                                client,
-                                                chats_results["data"][chat_index]["id"],
-                                                chats_results["data"][chat_index][
-                                                    "chat_type"
-                                                ],
+                                            delete_chat_results = (
+                                                Chat.delete_chat_group(
+                                                    client,
+                                                    chats_results["data"][chat_index][
+                                                        "id"
+                                                    ],
+                                                    chats_results["data"][chat_index][
+                                                        "chat_type"
+                                                    ],
+                                                )
                                             )
                                             if delete_chat_results["status"] == True:
                                                 del chats_names[chat_index]
                                                 del chats_results["data"][chat_index]
                                                 break
                                         elif menu_option[1] == 2:
-                                            rename_chat_results = Chat.rename_chat_group(
-                                                client,
-                                                chats_results["data"][chat_index]["id"],
-                                                chats_results["data"][chat_index][
-                                                    "chat_type"
-                                                ],
+                                            rename_chat_results = (
+                                                Chat.rename_chat_group(
+                                                    client,
+                                                    chats_results["data"][chat_index][
+                                                        "id"
+                                                    ],
+                                                    chats_results["data"][chat_index][
+                                                        "chat_type"
+                                                    ],
+                                                )
                                             )
                                             if rename_chat_results["status"] == True:
-                                                chats_names[chat_index] = rename_chat_results[
-                                                    "data"
-                                                ]["new_name"]
-                                                chats_results["data"][chat_index]["name"] = rename_chat_results[
-                                                    "data"
-                                                ]["new_name"]
+                                                chats_names[
+                                                    chat_index
+                                                ] = rename_chat_results["data"][
+                                                    "new_name"
+                                                ]
+                                                chats_results["data"][chat_index][
+                                                    "name"
+                                                ] = rename_chat_results["data"][
+                                                    "new_name"
+                                                ]
 
                                     except KeyboardInterrupt:
                                         os.system("cls" if os.name == "nt" else "clear")
@@ -137,8 +151,13 @@ while True:
                                 break
 
                 elif menu_option[1] == 1:
-                    groups_results = Chat.find_chats_groups(client, user_information, "group")
-                    if groups_results["status"] == True and groups_results["data"] != []:
+                    groups_results = Chat.find_chats_groups(
+                        client, user_information, "group"
+                    )
+                    if (
+                        groups_results["status"] == True
+                        and groups_results["data"] != []
+                    ):
                         groups_names = []
                         for chat in groups_results["data"]:
                             groups_names.append(chat["name"])
@@ -170,44 +189,62 @@ while True:
                                             0,
                                         )
                                         if menu_option[1] == 0:
-                                            remove_user_results = Chat.group_remove_user(
-                                                client,
-                                                groups_results["data"][group_index]["id"],
+                                            remove_user_results = (
+                                                Chat.group_remove_user(
+                                                    client,
+                                                    groups_results["data"][group_index][
+                                                        "id"
+                                                    ],
+                                                )
                                             )
                                         elif menu_option[1] == 1:
                                             add_user_results = Chat.group_add_user(
                                                 client,
-                                                groups_results["data"][group_index]["id"],
+                                                groups_results["data"][group_index][
+                                                    "id"
+                                                ],
                                             )
                                         elif menu_option[1] == 2:
                                             pass
                                         elif menu_option[1] == 3:
-                                            delete_group_results = Chat.delete_chat_group(
-                                                client,
-                                                groups_results["data"][group_index]["id"],
-                                                groups_results["data"][group_index][
-                                                    "chat_type"
-                                                ],
+                                            delete_group_results = (
+                                                Chat.delete_chat_group(
+                                                    client,
+                                                    groups_results["data"][group_index][
+                                                        "id"
+                                                    ],
+                                                    groups_results["data"][group_index][
+                                                        "chat_type"
+                                                    ],
+                                                )
                                             )
                                             if delete_group_results["status"] == True:
                                                 del groups_names[group_index]
                                                 del groups_results["data"][group_index]
                                                 break
                                         elif menu_option[1] == 4:
-                                            rename_group_results = Chat.rename_chat_group(
-                                                client,
-                                                groups_results["data"][group_index]["id"],
-                                                groups_results["data"][group_index][
-                                                    "chat_type"
-                                                ],
+                                            rename_group_results = (
+                                                Chat.rename_chat_group(
+                                                    client,
+                                                    groups_results["data"][group_index][
+                                                        "id"
+                                                    ],
+                                                    groups_results["data"][group_index][
+                                                        "chat_type"
+                                                    ],
+                                                )
                                             )
                                             if rename_group_results["status"] == True:
-                                                groups_names[group_index] = rename_group_results[
-                                                    "data"
-                                                ]["new_name"]
-                                                groups_results["data"][group_index]["name"] = rename_group_results[
-                                                    "data"
-                                                ]["new_name"]
+                                                groups_names[
+                                                    group_index
+                                                ] = rename_group_results["data"][
+                                                    "new_name"
+                                                ]
+                                                groups_results["data"][group_index][
+                                                    "name"
+                                                ] = rename_group_results["data"][
+                                                    "new_name"
+                                                ]
                                     except KeyboardInterrupt:
                                         os.system("cls" if os.name == "nt" else "clear")
                                         break
@@ -242,25 +279,39 @@ while True:
                             break
 
                         if menu_option[1] == 0:
-                            change_user_name_results = User.change_name(client, user_information)
+                            change_user_name_results = User.change_name(
+                                client, user_information
+                            )
 
                             if change_user_name_results["status"] == True:
-                                login_results["data"]["name"] = change_user_name_results["data"]
+                                login_results["data"][
+                                    "name"
+                                ] = change_user_name_results["data"]
 
                         elif menu_option[1] == 1:
-                            change_phone_number_results = User.change_phone_number(client, user_information)
+                            change_phone_number_results = User.change_phone_number(
+                                client, user_information
+                            )
 
                             if change_phone_number_results["status"] == True:
-                                login_results["data"]["phone_number"] = change_phone_number_results["data"]
+                                login_results["data"][
+                                    "phone_number"
+                                ] = change_phone_number_results["data"]
 
                         elif menu_option[1] == 2:
-                            change_password_results = User.change_password(client, user_information)
+                            change_password_results = User.change_password(
+                                client, user_information
+                            )
 
                             if change_password_results["status"] == True:
-                                login_results["data"]["password"] = change_password_results["data"]
+                                login_results["data"][
+                                    "password"
+                                ] = change_password_results["data"]
 
                         elif menu_option[1] == 3:
-                            delete_user_results = User.delete_user(client, user_information)
+                            delete_user_results = User.delete_user(
+                                client, user_information
+                            )
                             if delete_user_results["status"] == True:
                                 loops_breaker += 2
                             continue

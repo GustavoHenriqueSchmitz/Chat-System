@@ -118,7 +118,11 @@ class Chat:
         while True:
             try:
                 confirm_deletion = (
-                    str(input(f"Do you really want to delete this {'chat' if type == 'chat' else 'group'}? [Y/N]: "))
+                    str(
+                        input(
+                            f"Do you really want to delete this {'chat' if type == 'chat' else 'group'}? [Y/N]: "
+                        )
+                    )
                     .strip()
                     .lower()
                 )
@@ -160,7 +164,9 @@ class Chat:
     def rename_chat_group(client, id, type):
         print(f"-------- Rename {'Chat' if type == 'chat' else 'Group'} --------\n")
         try:
-            new_name = str(input(f"New {'chat' if type == 'chat' else 'group'} name: ")).strip()
+            new_name = str(
+                input(f"New {'chat' if type == 'chat' else 'group'} name: ")
+            ).strip()
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
@@ -183,7 +189,7 @@ class Chat:
         time.sleep(2.2)
         os.system("cls" if os.name == "nt" else "clear")
         return results
-    
+
     @staticmethod
     def group_add_user(client, group_id):
         try:
@@ -216,7 +222,7 @@ class Chat:
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
-    
+
     @staticmethod
     def group_remove_user(client, group_id):
         try:

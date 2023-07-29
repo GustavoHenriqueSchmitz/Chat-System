@@ -8,21 +8,14 @@ class ChatController:
     @staticmethod
     def find_chats_groups(client_socket, database, message):
         try:
-            users_chats_results = database["users_chats"].find_users_chats({
-                "where": {
-                    "id_user": message["data"]["user_id"]
-                },
-                "join": {
-                    "chats": {
-                        "join_type": "right",
-                        "on_condition": "chats.id"
+            users_chats_results = database["users_chats"].find_users_chats(
+                {
+                    "where": {"id_user": message["data"]["user_id"]},
+                    "join": {
+                        "chats": {"join_type": "right", "on_condition": "chats.id"}
                     },
-                    "users": {
-                        "join_type": "left",
-                        "on_condition": "users.id"
-                    }
                 }
-            })
+            )
         except:
             client_socket.send(
                 json.dumps(
@@ -34,26 +27,55 @@ class ChatController:
                 ).encode("utf-8")
             )
         else:
-            chats = []
-            for chat in users_chats_results:
-                if chat["chat_type"] == message['data']['type'] and chat not in chats:
-                    chats.append(chat)
-            if chats != []:
+            try:
+                chats = []
+                for chat in users_chats_results:
+                    if (
+                        chat["chat_type"] == message["data"]["type"]
+                        and chat not in chats
+                    ):
+                        chats.append(chat)
+                if chats != []:
+                    for chat in chats:
+                        chat_users = database["users_chats"].find_users_chats(
+                            {
+                                "where": {"id_chat": chat["id"]},
+                                "join": {"users": {"on_condition": "users.id"}},
+                            }
+                        )
+                        chat["users"] = [
+                            {
+                                "id": chat_user["id"],
+                                "name": chat_user["name"],
+                                "phone_number": chat_user["phone_number"],
+                            }
+                            for chat_user in chat_users
+                        ]
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": f"{'Chats' if message['data']['type'] == 'chat' else 'Groups'} found with success",
+                                "data": chats,
+                                "status": True,
+                            }
+                        ).encode("utf-8")
+                    )
+                else:
+                    client_socket.send(
+                        json.dumps(
+                            {
+                                "message": f"No {'chats' if message['data']['type'] == 'chat' else 'groups'} found",
+                                "data": chats,
+                                "status": False,
+                            }
+                        ).encode("utf-8")
+                    )
+            except:
                 client_socket.send(
                     json.dumps(
                         {
-                            "message": f"{'Chats' if message['data']['type'] == 'chat' else 'Groups'} found with success",
-                            "data": chats,
-                            "status": True,
-                        }
-                    ).encode("utf-8")
-                )
-            else:
-                client_socket.send(
-                    json.dumps(
-                        {
-                            "message": f"No {'chats' if message['data']['type'] == 'chat' else 'groups'} found",
-                            "data": chats,
+                            "message": f"There was a problem while finding your {'chats' if message['data']['type'] == 'chat' else 'groups'}, try again or later.",
+                            "data": None,
                             "status": False,
                         }
                     ).encode("utf-8")
@@ -77,12 +99,16 @@ class ChatController:
             )
         else:
             try:
-                users_chats_user = database["users_chats"].find_users_chats(
-                    message["data"]["user_id"], None
-                )
-                users_chats_added_user = database["users_chats"].find_users_chats(
-                    user["id"], None
-                )
+                users_chats_user = database["users_chats"].find_users_chats({
+                    "where": {
+                        "id_user": message["data"]["user_id"]
+                    }
+                })
+                users_chats_added_user = database["users_chats"].find_users_chats({
+                    "where": {
+                        "id_user": user["id"]
+                    }
+                })
                 for user_chat_user in users_chats_user:
                     counter = 0
                     if (
@@ -95,15 +121,21 @@ class ChatController:
                     else:
                         for user_chat_added_user in users_chats_added_user:
                             if (
-                                database["chats"].find_chats(user_chat_user["id_chat"], None)[
-                                    "chat_type"
-                                ]
+                                database["chats"].find_chats(
+                                    user_chat_user["id_chat"], None
+                                )["chat_type"]
                                 == "group"
                             ):
                                 continue
                             else:
-                                if user_chat_user["id_chat"] == user_chat_added_user["id_chat"]:
-                                    if user_chat_user["id_user"] != user_chat_added_user["id_user"]:
+                                if (
+                                    user_chat_user["id_chat"]
+                                    == user_chat_added_user["id_chat"]
+                                ):
+                                    if (
+                                        user_chat_user["id_user"]
+                                        != user_chat_added_user["id_user"]
+                                    ):
                                         raise
                                     else:
                                         counter += 1
@@ -286,9 +318,7 @@ class ChatController:
     @staticmethod
     def delete_chat_group(client_socket, database, message):
         try:
-            database["users_chats"].delete_user_chat(
-                None, None, message["data"]["id"]
-            )
+            database["users_chats"].delete_user_chat(None, None, message["data"]["id"])
         except:
             client_socket.send(
                 json.dumps(
@@ -352,9 +382,7 @@ class ChatController:
 
     def group_add_user(client_socket, database, message):
         try:
-            user = database["users"].find_users(
-                None, message["data"]["added_user"]
-            )
+            user = database["users"].find_users(None, message["data"]["added_user"])
         except:
             client_socket.send(
                 json.dumps(
@@ -367,7 +395,11 @@ class ChatController:
             )
         else:
             try:
-                group_users_chats = database["users_chats"].find_users_chats(None, message["data"]["group_id"])
+                group_users_chats = database["users_chats"].find_users_chats({
+                    "where": {
+                        "id_chat": message["data"]["group_id"]
+                    }
+                })
                 for group_user_chat in group_users_chats:
                     if group_user_chat["id_user"] == user["id"]:
                         raise
@@ -383,7 +415,9 @@ class ChatController:
                 )
             else:
                 try:
-                    database["users_chats"].create_user_chat(user["id"], message["data"]["group_id"])
+                    database["users_chats"].create_user_chat(
+                        user["id"], message["data"]["group_id"]
+                    )
                 except:
                     client_socket.send(
                         json.dumps(

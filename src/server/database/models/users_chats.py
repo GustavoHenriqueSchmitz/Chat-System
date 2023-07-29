@@ -1,4 +1,3 @@
-
 class UsersChats:
     def __init__(self, connection):
         self.connection = connection
@@ -68,9 +67,13 @@ class UsersChats:
         """
 
         attributes = ""
-        for counter, attribute, activated in enumerate(config.get("attributes", {}).items()):
+        for counter, attribute, activated in enumerate(
+            config.get("attributes", {}).items()
+        ):
             if activated:
-                if len(config["attributes"]) > 1 and counter+1 < len(config["attributes"]):
+                if len(config["attributes"]) > 1 and counter + 1 < len(
+                    config["attributes"]
+                ):
                     attributes = attributes + f"{attribute},"
                 else:
                     attributes = attributes + attribute
@@ -78,17 +81,31 @@ class UsersChats:
         self.database.execute(
             """
             select {} from users_chats
-            {} join users {}
-            {} join chats {}
+            {} {} {}
+            {} {} {}
             where 1=1 {} {}
         """.format(
                 attributes if config.get("attributes", {}) else "*",
-                config["join"]["users"]["join_type"] if config.get("join", {}).get("users", {}).get("join_type", "") else "",
-                f'on id_user = {config["join"]["users"]["on_condition"]}' if config.get("join", {}).get("users", {}).get("on_condition", "") else "",
-                config["join"]["chats"]["join_type"] if config.get("join", {}).get("chats", {}).get("join_type", "") else "",
-                f'on id_chat = {config["join"]["chats"]["on_condition"]}' if config.get("join", {}).get("chats", {}).get("on_condition", "") else "",
-                "and id_user = '{}'".format(config["where"]["id_user"]) if config.get("where", {}).get("id_user", 0) else "",
-                "and id_chat = '{}'".format(config["where"]["id_chat"]) if config.get("where", {}).get("id_chat", "") else "",
+                config["join"]["users"]["join_type"]
+                if config.get("join", {}).get("users", {}).get("join_type", "")
+                else "",
+                f"join users" if config.get("join", {}).get("users", {}) else "",
+                f'on id_user = {config["join"]["users"]["on_condition"]}'
+                if config.get("join", {}).get("users", {}).get("on_condition", "")
+                else "",
+                config["join"]["chats"]["join_type"]
+                if config.get("join", {}).get("chats", {}).get("join_type", "")
+                else "",
+                f"join chats" if config.get("join", {}).get("chats", {}) else "",
+                f'on id_chat = {config["join"]["chats"]["on_condition"]}'
+                if config.get("join", {}).get("chats", {}).get("on_condition", "")
+                else "",
+                "and id_user = '{}'".format(config["where"]["id_user"])
+                if config.get("where", {}).get("id_user", 0)
+                else "",
+                "and id_chat = '{}'".format(config["where"]["id_chat"])
+                if config.get("where", {}).get("id_chat", "")
+                else "",
             ),
         )
 
