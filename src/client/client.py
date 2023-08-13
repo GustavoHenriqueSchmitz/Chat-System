@@ -1,5 +1,4 @@
 import socket
-import time
 from pick import pick as selectMenu
 from auth.auth import Auth
 from user.user import User
@@ -39,11 +38,11 @@ while True:
 
     if menu_option[1] == 0:
         login_results = Auth.login(client)
-        user_information = login_results["data"]
 
         if login_results["status"] == True:
             while True:
                 if loops_breaker > 0:
+                    loops_breaker -= 1
                     break
 
                 try:
@@ -74,7 +73,7 @@ while True:
 
                 if menu_option[1] == 0:
                     chats_results = Chat.find_chats_groups(
-                        client, user_information, "chat"
+                        client, login_results["data"], "chat"
                     )
                     if chats_results["status"] == True and chats_results["data"] != []:
                         chats_names = []
@@ -102,7 +101,7 @@ while True:
                                             0,
                                         )
                                         if menu_option[1] == 0:
-                                            pass
+                                            Chat.chat(client, chats_results["data"][chat_index]["users"], login_results["data"]["id"], chats_results["data"][chat_index]["id"])
                                         elif menu_option[1] == 1:
                                             delete_chat_results = (
                                                 Chat.delete_chat_group(
@@ -152,7 +151,7 @@ while True:
 
                 elif menu_option[1] == 1:
                     groups_results = Chat.find_chats_groups(
-                        client, user_information, "group"
+                        client, login_results["data"], "group"
                     )
                     if (
                         groups_results["status"] == True
@@ -175,6 +174,10 @@ while True:
                                     break
                                 group_index = menu_option[1]
                                 while True:
+                                    if loops_breaker > 0:
+                                        loops_breaker -= 1
+                                        break
+
                                     try:
                                         menu_option = selectMenu(
                                             [
@@ -188,15 +191,8 @@ while True:
                                             "=>",
                                             0,
                                         )
-                                        if menu_option[1] == 0:
-                                            remove_user_results = (
-                                                Chat.group_remove_user(
-                                                    client,
-                                                    groups_results["data"][group_index][
-                                                        "id"
-                                                    ],
-                                                )
-                                            )
+                                        if menu_option[0] == 0:
+                                            pass
                                         elif menu_option[1] == 1:
                                             add_user_results = Chat.group_add_user(
                                                 client,
@@ -204,8 +200,87 @@ while True:
                                                     "id"
                                                 ],
                                             )
+
+                                            if add_user_results["status"] == True:
+                                                groups_results["data"][group_index][
+                                                    "users"
+                                                ].append(
+                                                    add_user_results["data"][
+                                                        "user_information"
+                                                    ]
+                                                )
                                         elif menu_option[1] == 2:
-                                            pass
+                                            while True:
+                                                if loops_breaker > 0:
+                                                    loops_breaker -= 1
+                                                    break
+
+                                                try:
+                                                    try:
+                                                        menu_option = selectMenu(
+                                                            [
+                                                                f'{user["name"]} - {user["phone_number"]}'
+                                                                for user in groups_results[
+                                                                    "data"
+                                                                ][
+                                                                    group_index
+                                                                ][
+                                                                    "users"
+                                                                ]
+                                                            ],
+                                                            f"Remove User | ctrl+c to return",
+                                                            "=>",
+                                                            0,
+                                                        )
+                                                    except ValueError:
+                                                        break
+                                                    remove_user_results = (
+                                                        Chat.group_remove_user(
+                                                            client,
+                                                            groups_results["data"][
+                                                                group_index
+                                                            ]["id"],
+                                                            groups_results["data"][
+                                                                group_index
+                                                            ]["users"][menu_option[1]][
+                                                                "id"
+                                                            ],
+                                                        )
+                                                    )
+
+                                                    if (
+                                                        remove_user_results["status"]
+                                                        == True
+                                                    ):
+                                                        if (
+                                                            groups_results["data"][
+                                                                group_index
+                                                            ]["users"][menu_option[1]][
+                                                                "phone_number"
+                                                            ]
+                                                            == login_results["data"][
+                                                                "phone_number"
+                                                            ]
+                                                        ):
+                                                            del groups_results["data"][
+                                                                group_index
+                                                            ]["users"][menu_option[1]]
+                                                            del groups_names[
+                                                                menu_option[1]
+                                                            ]
+                                                            loops_breaker = 2
+                                                        else:
+                                                            del groups_results["data"][
+                                                                group_index
+                                                            ]["users"][menu_option[1]]
+                                                            continue
+                                                except KeyboardInterrupt:
+                                                    os.system(
+                                                        "cls"
+                                                        if os.name == "nt"
+                                                        else "clear"
+                                                    )
+                                                    break
                                         elif menu_option[1] == 3:
                                             delete_group_results = (
                                                 Chat.delete_chat_group(
@@ -253,14 +328,15 @@ while True:
                                 break
 
                 elif menu_option[1] == 2:
-                    Chat.create_chat(client, user_information)
+                    Chat.create_chat(client, login_results["data"])
 
                 elif menu_option[1] == 3:
-                    Chat.create_group(client, user_information)
+                    Chat.create_group(client, login_results["data"])
 
                 elif menu_option[1] == 4:
                     while True:
                         if loops_breaker > 0:
+                            loops_breaker -= 1
                             break
 
                         try:
@@ -280,7 +356,7 @@ while True:
 
                         if menu_option[1] == 0:
                             change_user_name_results = User.change_name(
-                                client, user_information
+                                client, login_results["data"]
                             )
 
                             if change_user_name_results["status"] == True:
@@ -290,7 +366,7 @@ while True:
 
                         elif menu_option[1] == 1:
                             change_phone_number_results = User.change_phone_number(
-                                client, user_information
+                                client, login_results["data"]
                             )
 
                             if change_phone_number_results["status"] == True:
@@ -300,7 +376,7 @@ while True:
 
                         elif menu_option[1] == 2:
                             change_password_results = User.change_password(
-                                client, user_information
+                                client, login_results["data"]
                             )
 
                             if change_password_results["status"] == True:
@@ -310,7 +386,7 @@ while True:
 
                         elif menu_option[1] == 3:
                             delete_user_results = User.delete_user(
-                                client, user_information
+                                client, login_results["data"]
                             )
                             if delete_user_results["status"] == True:
                                 loops_breaker += 2

@@ -2,7 +2,7 @@ import json
 import uuid
 import mysql.connector
 from mysql.connector import errorcode
-
+from datetime import datetime
 
 class ChatController:
     @staticmethod
@@ -26,6 +26,10 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             try:
                 chats = []
@@ -80,6 +84,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": False,
+                    "data": None
+                }
 
     @staticmethod
     def create_chat(client_socket, database, message):
@@ -97,18 +105,18 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             try:
-                users_chats_user = database["users_chats"].find_users_chats({
-                    "where": {
-                        "id_user": message["data"]["user_id"]
-                    }
-                })
-                users_chats_added_user = database["users_chats"].find_users_chats({
-                    "where": {
-                        "id_user": user["id"]
-                    }
-                })
+                users_chats_user = database["users_chats"].find_users_chats(
+                    {"where": {"id_user": message["data"]["user_id"]}}
+                )
+                users_chats_added_user = database["users_chats"].find_users_chats(
+                    {"where": {"id_user": user["id"]}}
+                )
                 for user_chat_user in users_chats_user:
                     counter = 0
                     if (
@@ -151,6 +159,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": False,
+                    "data": None
+                }
             else:
                 try:
                     chat_id = str(uuid.uuid4())
@@ -167,6 +179,10 @@ class ChatController:
                             }
                         ).encode("utf-8")
                     )
+                    return {
+                        "status": False,
+                        "data": None
+                    }
                 else:
                     try:
                         chat = database["chats"].find_chats(chat_id, None)
@@ -180,6 +196,10 @@ class ChatController:
                                 }
                             ).encode("utf-8")
                         )
+                        return {
+                            "status": False,
+                            "data": None
+                        }
                     else:
                         try:
                             database["users_chats"].create_user_chat(
@@ -201,7 +221,10 @@ class ChatController:
                                         }
                                     ).encode("utf-8")
                                 )
-                                return
+                                return {
+                                    "status": False,
+                                    "data": None
+                                }
                             else:
                                 client_socket.send(
                                     json.dumps(
@@ -212,7 +235,10 @@ class ChatController:
                                         }
                                     ).encode("utf-8")
                                 )
-                                return
+                                return {
+                                    "status": False,
+                                    "data": None
+                                }
                         else:
                             client_socket.send(
                                 json.dumps(
@@ -223,7 +249,10 @@ class ChatController:
                                     }
                                 ).encode("utf-8")
                             )
-                            return
+                            return {
+                                "status": True,
+                                "data": None
+                            }
 
     @staticmethod
     def create_group(client_socket, database, message):
@@ -244,6 +273,10 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             try:
                 chat_id = str(uuid.uuid4())
@@ -260,6 +293,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": False,
+                    "data": None
+                }
             else:
                 try:
                     chat = database["chats"].find_chats(chat_id, None)
@@ -273,6 +310,10 @@ class ChatController:
                             }
                         ).encode("utf-8")
                     )
+                    return {
+                        "status": False,
+                        "data": None
+                    }
                 else:
                     try:
                         for user in users:
@@ -291,7 +332,10 @@ class ChatController:
                                     }
                                 ).encode("utf-8")
                             )
-                            return
+                            return {
+                                "status": False,
+                                "data": None
+                            }
                         else:
                             client_socket.send(
                                 json.dumps(
@@ -302,7 +346,10 @@ class ChatController:
                                     }
                                 ).encode("utf-8")
                             )
-                            return
+                            return {
+                                "status": False,
+                                "data": None
+                            }
                     else:
                         client_socket.send(
                             json.dumps(
@@ -313,7 +360,10 @@ class ChatController:
                                 }
                             ).encode("utf-8")
                         )
-                        return
+                        return {
+                            "status": True,
+                            "data": None
+                        }
 
     @staticmethod
     def delete_chat_group(client_socket, database, message):
@@ -329,6 +379,10 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             try:
                 database["chats"].delete_chat(message["data"]["id"])
@@ -342,6 +396,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": False,
+                    "data": None
+                }
             else:
                 client_socket.send(
                     json.dumps(
@@ -352,6 +410,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": True,
+                    "data": None
+                }
 
     @staticmethod
     def rename_chat_group(client_socket, database, message):
@@ -369,6 +431,10 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             client_socket.send(
                 json.dumps(
@@ -379,7 +445,12 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": True,
+                "data": None
+            }
 
+    @staticmethod
     def group_add_user(client_socket, database, message):
         try:
             user = database["users"].find_users(None, message["data"]["added_user"])
@@ -393,13 +464,15 @@ class ChatController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             try:
-                group_users_chats = database["users_chats"].find_users_chats({
-                    "where": {
-                        "id_chat": message["data"]["group_id"]
-                    }
-                })
+                group_users_chats = database["users_chats"].find_users_chats(
+                    {"where": {"id_chat": message["data"]["group_id"]}}
+                )
                 for group_user_chat in group_users_chats:
                     if group_user_chat["id_user"] == user["id"]:
                         raise
@@ -413,6 +486,10 @@ class ChatController:
                         }
                     ).encode("utf-8")
                 )
+                return {
+                    "status": True,
+                    "data": None
+                }
             else:
                 try:
                     database["users_chats"].create_user_chat(
@@ -428,13 +505,94 @@ class ChatController:
                             }
                         ).encode("utf-8")
                     )
+                    return {
+                        "status": False,
+                        "data": None
+                    }
                 else:
                     client_socket.send(
                         json.dumps(
                             {
                                 "message": "User added with success.",
-                                "data": None,
+                                "data": {"user_information": user},
                                 "status": True,
                             }
                         ).encode("utf-8")
                     )
+                    return {
+                        "status": True,
+                        "data": None
+                    }
+
+    @staticmethod
+    def group_remove_user(client_socket, database, message):
+        try:
+            group_user_ligations = database["users_chats"].find_users_chats(
+                {"where": {"id_chat": message["data"]["group_id"]}}
+            )
+            database["users_chats"].delete_user_chat(
+                None, message["data"]["user_id"], message["data"]["group_id"]
+            )
+            if len(group_user_ligations) <= 1:
+                database["chats"].delete_chat(message["data"]["group_id"])
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "Error trying to remove user, please try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+            return {
+                "status": False,
+                "data": None
+            }
+        else:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "User removed with success.",
+                        "data": None,
+                        "status": True,
+                    }
+                ).encode("utf-8")
+            )
+            return {
+                "status": True,
+                "data": None
+            }
+    
+    @staticmethod
+    def chat(client_socket, database, message, clients_connected):
+        try:
+            database["messages"].create_message(message["data"]["message"], message["data"]["sender_id"], message["data"]["chat_id"], datetime.now())
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "Error trying to send your message, please try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+            return {
+                "status": False,
+                "data": None
+            }
+        else:
+            for user in message["data"]["chat_users"]:
+                try:
+                    clients_connected[user["id"]].send(
+                        json.dumps(
+                            {
+                                "message": "Error trying to send your message, please try again or later.",
+                                "data": message["data"]["message"],
+                                "status": False,
+                            }
+                        ).encode("utf-8")
+                    )
+                except KeyError:
+                    pass

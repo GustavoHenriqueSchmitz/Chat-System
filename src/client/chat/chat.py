@@ -1,6 +1,7 @@
 import time
 import os
 import json
+import threading
 from phonenumbers import parse, NumberParseException
 
 
@@ -224,16 +225,14 @@ class Chat:
             return {"message": None, "data": None, "status": False}
 
     @staticmethod
-    def group_remove_user(client, group_id):
+    def group_remove_user(client, group_id, user_id):
         try:
             print("-------- Remove User --------\n => ctrl+c to cancel...")
             client.send(
                 json.dumps(
                     {
-                        "request_type": "group_add_user",
-                        "data": {
-                            "group_id": group_id,
-                        },
+                        "request_type": "group_remove_user",
+                        "data": {"group_id": group_id, "user_id": user_id},
                     }
                 ).encode("utf-8")
             )
@@ -243,6 +242,41 @@ class Chat:
             time.sleep(2.2)
             os.system("cls" if os.name == "nt" else "clear")
             return results
+        except KeyboardInterrupt:
+            os.system("cls" if os.name == "nt" else "clear")
+            return {"message": None, "data": None, "status": False}
+    
+    @staticmethod
+    def chat(client, chat_users, sender_id, chat_id):
+        
+        def receive_message():
+            while True:
+                message_received = json.loads(client.recv(100000).decode("utf-8"))
+                print(f'{message_received["data"]}')
+
+        try:
+            receive_thread = threading.Thread(target=receive_message)
+            receive_thread.start()
+            while True:
+                try:
+                    message = str(input(""))
+                    client.send(
+                        json.dumps(
+                            {
+                                "request_type": "chat",
+                                "data": {
+                                    "chat_users": chat_users,
+                                    "sender_id": sender_id,
+                                    "message": message,
+                                    "chat_id": chat_id
+                                },
+                            }
+                        ).encode("utf-8")
+                    )
+                except KeyboardInterrupt:
+                    receive_thread.join()
+                    os.system("cls" if os.name == "nt" else "clear")
+                    return {"message": None, "data": None, "status": False}
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}

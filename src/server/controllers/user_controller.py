@@ -20,6 +20,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             client_socket.send(
                 json.dumps(
@@ -30,6 +34,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": True,
+                "data": None
+            }
 
     @staticmethod
     def change_phone_number(client_socket, database, message):
@@ -51,7 +59,10 @@ class UserController:
                         }
                     ).encode("utf-8")
                 )
-                return
+                return {
+                    "status": False,
+                    "data": None
+                }
             else:
                 client_socket.send(
                     json.dumps(
@@ -62,7 +73,10 @@ class UserController:
                         }
                     ).encode("utf-8")
                 )
-                return
+                return {
+                    "status": False,
+                    "data": None
+                }
         else:
             client_socket.send(
                 json.dumps(
@@ -73,7 +87,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
-            return
+            return {
+                "status": True,
+                "data": None
+            }
 
     @staticmethod
     def change_password(client_socket, database, message):
@@ -94,7 +111,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
-            return
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             client_socket.send(
                 json.dumps(
@@ -105,7 +125,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
-            return
+            return {
+                "status": True,
+                "data": None
+            }
 
     @staticmethod
     def delete_user(client_socket, database, message):
@@ -121,6 +144,10 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": False,
+                "data": None
+            }
         else:
             client_socket.send(
                 json.dumps(
@@ -131,3 +158,7 @@ class UserController:
                     }
                 ).encode("utf-8")
             )
+            return {
+                "status": True,
+                "data": None
+            }
