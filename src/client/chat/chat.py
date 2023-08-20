@@ -1,7 +1,7 @@
+from multiprocessing import Process, Lock
 import time
 import os
 import json
-import threading
 from phonenumbers import parse, NumberParseException
 
 
@@ -245,38 +245,47 @@ class Chat:
         except KeyboardInterrupt:
             os.system("cls" if os.name == "nt" else "clear")
             return {"message": None, "data": None, "status": False}
-    
+
     @staticmethod
-    def chat(client, chat_users, sender_id, chat_id):
-        
+    def chat(client, chat_users, sender_id, sender_name, chat_id):
         def receive_message():
             while True:
-                message_received = json.loads(client.recv(100000).decode("utf-8"))
-                print(f'{message_received["data"]}')
+                try:
+                    message_received = json.loads(client.recv(100000).decode("utf-8"))
+                    # print(
+                    #     f'{message_received["data"]["from"]}: {message_received["data"]["message"]}'
+                    # )
+                    print(message_received["data"]["message"])
+                except:
+                    pass
 
         try:
-            receive_thread = threading.Thread(target=receive_message)
-            receive_thread.start()
-            while True:
-                try:
-                    message = str(input(""))
-                    client.send(
-                        json.dumps(
-                            {
-                                "request_type": "chat",
-                                "data": {
-                                    "chat_users": chat_users,
-                                    "sender_id": sender_id,
-                                    "message": message,
-                                    "chat_id": chat_id
-                                },
-                            }
-                        ).encode("utf-8")
-                    )
-                except KeyboardInterrupt:
-                    receive_thread.join()
-                    os.system("cls" if os.name == "nt" else "clear")
-                    return {"message": None, "data": None, "status": False}
-        except KeyboardInterrupt:
-            os.system("cls" if os.name == "nt" else "clear")
-            return {"message": None, "data": None, "status": False}
+            receive_process = Process(target=receive_message)
+            receive_process.start()
+        except:
+            return
+        while True:
+            try:
+                with Lock():
+                    # message = str(input(f"{sender_name}: "))
+                    message = str(input())
+                client.send(
+                    json.dumps(
+                        {
+                            "request_type": "chat",
+                            "data": {
+                                "chat_users": chat_users,
+                                "sender_id": sender_id,
+                                "sender_name": sender_name,
+                                "message": message,
+                                "chat_id": chat_id,
+                            },
+                        }
+                    ).encode("utf-8")
+                )
+            except KeyboardInterrupt:
+                receive_process.terminate()
+                receive_process.join()
+                receive_process.close()
+                os.system("cls" if os.name == "nt" else "clear")
+                return {"message": None, "data": None, "status": False}

@@ -14,26 +14,18 @@ server.listen()
 
 clients_connected = {}
 
+
 def check_connections():
-    
-    def is_socket_alive(socket):
-        try:
-            socket.sendAll(json.dumps({}).encode("utf-8"))
-        except Exception as e:
-            print("===============", e)
-            return False
-        else:
-            return True
-    
     while True:
         for client_key, client in clients_connected.copy().items():
-            alive = is_socket_alive(client)
-            if alive == False:
+            if str(client).split()[1] == "[closed]":
                 del clients_connected[client_key]
+            else:
+                pass
+
 
 def handle_client(client_socket):
     while True:
-        print(clients_connected)
         json_data = client_socket.recv(1024).decode("utf-8")
         message = json.loads(json_data)
 
@@ -57,10 +49,10 @@ def handle_client(client_socket):
 
         elif message["request_type"] == "delete_user":
             UserController.delete_user(client_socket, database, message)
-        
+
         elif message["request_type"] == "chat":
             ChatController.chat(client_socket, database, message, clients_connected)
-        
+
         elif message["request_type"] == "find_chats_groups":
             ChatController.find_chats_groups(client_socket, database, message)
 
@@ -85,6 +77,7 @@ def handle_client(client_socket):
         elif message["request_type"] == "close_connection":
             client_socket.close()
             break
+
 
 check_connections = threading.Thread(target=check_connections)
 check_connections.start()

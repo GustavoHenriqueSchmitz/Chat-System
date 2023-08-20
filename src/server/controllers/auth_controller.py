@@ -14,10 +14,7 @@ class AuthController:
                     {"message": "User not found.", "data": None, "status": False}
                 ).encode("utf-8")
             )
-            return {
-                "status": False,
-                "data": None
-            }
+            return {"status": False, "data": None}
         else:
             if message["data"]["password"] == user["password"]:
                 client_socket.send(
@@ -29,10 +26,7 @@ class AuthController:
                         }
                     ).encode("utf-8")
                 )
-                return {
-                    "status": True,
-                    "data": user
-                }
+                return {"status": True, "data": user}
             else:
                 client_socket.send(
                     json.dumps(
@@ -43,10 +37,7 @@ class AuthController:
                         }
                     ).encode("utf-8")
                 )
-                return {
-                    "status": False,
-                    "data": None
-                }
+                return {"status": False, "data": None}
 
     @staticmethod
     def sign_up(client_socket, database, message):
@@ -67,10 +58,7 @@ class AuthController:
                         }
                     ).encode("utf-8")
                 )
-                return {
-                    "status": False,
-                    "data": None
-                }
+                return {"status": False, "data": None}
             else:
                 client_socket.send(
                     json.dumps(
@@ -81,10 +69,7 @@ class AuthController:
                         }
                     ).encode("utf-8")
                 )
-                return {
-                    "status": False,
-                    "data": None
-                }
+                return {"status": False, "data": None}
         else:
             client_socket.send(
                 json.dumps(
@@ -95,7 +80,4 @@ class AuthController:
                     }
                 ).encode("utf-8")
             )
-            return {
-                "status": True,
-                "data": None
-            }
+            return {"status": True, "data": None}

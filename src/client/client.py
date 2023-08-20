@@ -101,7 +101,15 @@ while True:
                                             0,
                                         )
                                         if menu_option[1] == 0:
-                                            Chat.chat(client, chats_results["data"][chat_index]["users"], login_results["data"]["id"], chats_results["data"][chat_index]["id"])
+                                            Chat.chat(
+                                                client,
+                                                chats_results["data"][chat_index][
+                                                    "users"
+                                                ],
+                                                login_results["data"]["id"],
+                                                login_results["data"]["name"],
+                                                chats_results["data"][chat_index]["id"],
+                                            )
                                         elif menu_option[1] == 1:
                                             delete_chat_results = (
                                                 Chat.delete_chat_group(
