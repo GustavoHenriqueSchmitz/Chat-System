@@ -53,6 +53,9 @@ def handle_client(client_socket):
         elif message["request_type"] == "chat":
             ChatController.chat(client_socket, database, message, clients_connected)
 
+        elif message["request_type"] == "load_chat":
+            ChatController.load_chat(client_socket, database, message)
+
         elif message["request_type"] == "find_chats_groups":
             ChatController.find_chats_groups(client_socket, database, message)
 
