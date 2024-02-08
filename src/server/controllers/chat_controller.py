@@ -526,3 +526,30 @@ class ChatController:
                 except KeyError:
                     pass
             return {"status": True, "data": None}
+        
+    def load_chat(client_socket, database, message):
+        try:
+            chat_messages = database["messages"].find_messages(id_chat=message["data"]["chat_id"])
+        except:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "There was a problem while trying to find your messages, try again or later.",
+                        "data": None,
+                        "status": False,
+                    }
+                ).encode("utf-8")
+            )
+            return {"status": False, "data": None}
+        else:
+            client_socket.send(
+                json.dumps(
+                    {
+                        "message": "Messages got with success",
+                        "data": {"messages": chat_messages},
+                        "status": True,
+                    }
+                ).encode("utf-8")
+            )
+            return {"status": True, "data": None}
+        

@@ -252,9 +252,6 @@ class Chat:
             while True:
                 try:
                     message_received = json.loads(client.recv(100000).decode("utf-8"))
-                    # print(
-                    #     f'{message_received["data"]["from"]}: {message_received["data"]["message"]}'
-                    # )
                     print(message_received["data"]["message"])
                 except:
                     pass
@@ -264,10 +261,28 @@ class Chat:
             receive_process.start()
         except:
             return
+
+        try:
+            client.send(
+                json.dumps(
+                    {
+                        "request_type": "load_chat",
+                        "data": {"chat_id": chat_id}
+                    }
+                ).encode("utf-8")
+            )
+            results = json.loads(client.recv(100000).decode("utf-8"))
+            print("------------------------------------------------")
+            print(results["message"])
+            print("------------------------------------------------")
+            for message in results["data"]["messages"]:
+                print(message["content"])
+        except:
+            return
+
         while True:
             try:
                 with Lock():
-                    # message = str(input(f"{sender_name}: "))
                     message = str(input())
                 client.send(
                     json.dumps(

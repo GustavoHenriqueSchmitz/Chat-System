@@ -30,26 +30,44 @@ class Messages:
         )
         self.connection.commit()
 
-    def find_messages(self):
+    def find_messages(self, id=None, id_sender=None, id_chat=None):
         self.database.execute(
             """
             select id, content, id_sender, id_chat, send_date from messages
-        """
+            where 1=1 {} {} {}
+        """.format(
+                "and id = '{}'".format(id) if id is not None else "",
+                "and id_sender = '{}'".format(id_sender)
+                if id_sender is not None
+                else "",
+                "and id_chat = '{}'".format(id_chat) if id_chat is not None else "",
+            ),
         )
         messages = self.database.fetchall()
         self.connection.commit()
 
-        messages_formatted = []
-        for message in messages:
-            messages_formatted.append(
-                {
-                    "id": message[0],
-                    "name": message[1],
-                    "phone_number": message[2],
-                    "password": message[3],
+        if id is not None:
+            if messages == []:
+                raise Exception("MessageNotFound")
+            else:
+                return {
+                    "id": messages[0][0],
+                    "content": messages[0][1],
+                    "id_sender": messages[0][2],
+                    "id_chat": messages[0][3],
                 }
-            )
-        return messages_formatted
+        else:
+            messages_formatted = []
+            for message in messages:
+                messages_formatted.append(
+                    {
+                        "id": message[0],
+                        "content": message[1],
+                        "id_sender": message[2],
+                        "id_chat": message[3],
+                    }
+                )
+            return messages_formatted
 
     def update_message(
         self, id, content=None, id_sender=None, id_chat=None, send_date=None
