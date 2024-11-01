@@ -20,23 +20,23 @@ git clone https://github.com/GustavoHenriqueSchmitz/Chat-System.git
 **3 -** Install [docker-compose](https://docs.docker.com/compose/install/)
 **4 -** Install MySQL Development Libraries. `mysqlclient` requires MySQL development libraries.  
 Visit the [MySQL Community Downloads](https://dev.mysql.com/downloads/). Alternatively, you can use the compatible [MariaDB Downloads](https://mariadb.com/downloads/).
-**5 -** In the root directory of the project execute:
+**5 -** In the root directory of the project run:
 ```
 pip install -r requirements.txt
 ```
 
 ## Initializing the project
-**1 -** Open a terminal and in the root directory execute:
+**1 -** Open a terminal and in the root directory run:
 ```
 docker-compose up
 ```
 
-**3 -** To initialize the server, open a terminal and from the server root directory execute:
+**3 -** To initialize the server, open a terminal and from the server root directory run:
 ```
 python server.py
 ```
 
-**4 -** To initialize a client open a terminal and from the client root directory execute:
+**4 -** To initialize a client open a terminal and from the client root directory run:
 ```
 python client.py
 ```
