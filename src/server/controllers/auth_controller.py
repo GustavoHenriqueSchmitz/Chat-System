@@ -2,7 +2,6 @@ import json
 import mysql.connector
 from mysql.connector import errorcode
 
-
 class AuthController:
     @staticmethod
     def login(client_socket, database, message):
