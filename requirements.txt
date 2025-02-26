@@ -1,3 +1,3 @@
-pick
-phonenumbers
-mysql - connector - python
+pick==2.4.0
+phonenumbers==8.13.55
+mysql-connector-python==9.2.0
